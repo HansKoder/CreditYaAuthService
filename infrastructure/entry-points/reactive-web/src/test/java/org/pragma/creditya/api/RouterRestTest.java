@@ -89,4 +89,24 @@ class RouterRestTest {
                 );;
 
     }
+
+    @Test
+    void shouldThrowExceptionWhenDBIsNotWorking() {
+        when(userUseCase.createUser(any(CreateUserCommand.class)))
+                        .thenReturn(Mono.error(new RuntimeException("DB is not working")));
+
+        webTestClient.post()
+                .uri("/api/auth")
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(new CreateUserRequest("doe@gmail.com", "123"))
+                .exchange()
+                .expectStatus().is5xxServerError()
+                .expectBody(ErrorResponse.class)
+                .value(errorResponse -> {
+                            assertEquals(500, errorResponse.status());
+                            assertEquals("DB is not working", errorResponse.message());
+                        }
+                );;
+
+    }
 }

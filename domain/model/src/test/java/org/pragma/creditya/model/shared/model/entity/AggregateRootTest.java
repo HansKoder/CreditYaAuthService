@@ -31,6 +31,7 @@ public class AggregateRootTest {
         DummyEntity dummyEntityB = new DummyEntity("107", "stark");
 
         assertEquals(dummyEntityA, dummyEntityB);
+        assertEquals(dummyEntityA.hashCode(), dummyEntityB.hashCode());
     }
 
     @Test
@@ -40,6 +41,7 @@ public class AggregateRootTest {
         DummyEntity dummyEntityB = new DummyEntity("108", "stark");
 
         assertNotEquals(dummyEntityA, dummyEntityB);
+        assertNotEquals(dummyEntityA.hashCode(), dummyEntityB.hashCode());
     }
 
 

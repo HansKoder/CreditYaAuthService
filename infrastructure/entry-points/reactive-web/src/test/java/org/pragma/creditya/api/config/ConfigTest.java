@@ -30,7 +30,6 @@ class ConfigTest {
     @MockitoBean
     IUserUseCase userUseCase;
 
-
     @Test
     void corsConfigurationShouldAllowOrigins() {
         User user = User.create("doe@gmail.com", "123");

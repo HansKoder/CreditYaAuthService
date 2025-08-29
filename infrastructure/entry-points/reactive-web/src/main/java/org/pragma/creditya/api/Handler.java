@@ -2,7 +2,7 @@ package org.pragma.creditya.api;
 
 import lombok.RequiredArgsConstructor;
 import org.pragma.creditya.api.dto.request.CreateUserRequest;
-import org.pragma.creditya.api.mapper.UserMapper;
+import org.pragma.creditya.api.mapper.UserRestMapper;
 import org.pragma.creditya.usecase.user.ports.in.IUserUseCase;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -18,7 +18,7 @@ public class Handler {
 
     public Mono<ServerResponse> createUser(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(CreateUserRequest.class)
-                .map(UserMapper::toCommand)
+                .map(UserRestMapper::toCommand)
                 .flatMap(userUseCase::createUser)
                 .flatMap(user -> ServerResponse.status(HttpStatus.CREATED).build());
     }

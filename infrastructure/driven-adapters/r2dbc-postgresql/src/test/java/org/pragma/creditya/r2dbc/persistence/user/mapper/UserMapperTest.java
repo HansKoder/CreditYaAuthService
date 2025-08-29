@@ -8,13 +8,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UserMapperTest {
 
+    private UserMapper userMapper = new UserMapper();
+
     @Test
     void shouldBeMappedToEntity () {
         UserEntity data = new UserEntity();
         data.setUsername("doe@gmail.com");
         data.setPassword("1234");
 
-        User entity = User.create(data.getUsername(), data.getPassword());
+        User entity = userMapper.toEntity(data);
 
         assertEquals("doe@gmail.com", entity.getId().getValue());
         assertEquals("1234", entity.getPassword().value());
@@ -24,9 +26,7 @@ public class UserMapperTest {
     void shouldBeMappedToData () {
         User entity = User.create("doe@gmail.com", "1234");
 
-        UserEntity data = new UserEntity();
-        data.setUsername(entity.getId().getValue());
-        data.setPassword(entity.getPassword().value());
+        UserEntity data = userMapper.toData(entity);
 
         assertEquals("doe@gmail.com", data.getUsername());
         assertEquals("1234", data.getPassword());

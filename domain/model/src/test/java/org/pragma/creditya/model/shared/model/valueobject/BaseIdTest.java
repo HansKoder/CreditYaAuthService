@@ -13,12 +13,19 @@ public class BaseIdTest {
         }
     }
 
+    private static class AnotherDummyId extends BaseId<String> {
+        protected AnotherDummyId(String value) {
+            super(value);
+        }
+    }
+
     @Test
     void shouldBeEqualsTwoIDs () {
         DummyId dummyIdA = new DummyId("abc");
         DummyId dummyIdB = new DummyId("abc");
 
         assertEquals(dummyIdA, dummyIdB);
+        assertEquals(dummyIdA.hashCode(), dummyIdB.hashCode());
     }
 
     @Test
@@ -27,22 +34,25 @@ public class BaseIdTest {
         DummyId dummyIdB = new DummyId("AbC");
 
         assertNotEquals(dummyIdA, dummyIdB);
+        assertNotEquals(dummyIdA.hashCode(), dummyIdB.hashCode());
     }
 
-    @Test
-    void shouldHaveTheSameHash () {
-        DummyId dummyIdA = new DummyId("abc");
-        DummyId dummyIdB = new DummyId("abc");
-
-        assertEquals(dummyIdA.hashCode(), dummyIdB.hashCode());
-    }
 
     @Test
-    void shouldHaveDistinctHash () {
-        DummyId dummyIdA = new DummyId("abc");
+    void shouldBeDistinctOneIsIdNull () {
+        DummyId dummyIdA = new DummyId(null);
         DummyId dummyIdB = new DummyId("AbC");
 
-        assertNotEquals(dummyIdA.hashCode(), dummyIdB.hashCode());
+        assertNotEquals(dummyIdA, dummyIdB);
+    }
+
+    @Test
+    void shouldBeDistinctOneIsAnotherClassId () {
+        DummyId dummyIdA = new DummyId("123");
+        AnotherDummyId dummyIdB = new AnotherDummyId("123");
+
+        assertNotEquals(dummyIdA, dummyIdB);
+        assertEquals(dummyIdA.hashCode(), dummyIdB.hashCode());
     }
 
 }
