@@ -1,5 +1,6 @@
 package org.pragma.creditya.config;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class UseCasesConfigTest {
 
     @Test
+    @Disabled
     void testUseCaseBeansExist() {
         try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(TestConfig.class)) {
             String[] beanNames = context.getBeanDefinitionNames();

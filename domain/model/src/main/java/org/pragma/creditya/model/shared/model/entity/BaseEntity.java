@@ -1,4 +1,4 @@
-package org.pragma.creditya.model.shared.domain.model.entity;
+package org.pragma.creditya.model.shared.model.entity;
 import java.util.Objects;
 
 public abstract class BaseEntity<ID> {

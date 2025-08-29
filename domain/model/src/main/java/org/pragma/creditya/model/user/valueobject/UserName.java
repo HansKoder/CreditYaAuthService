@@ -1,6 +1,6 @@
 package org.pragma.creditya.model.user.valueobject;
 
-import org.pragma.creditya.model.shared.domain.model.valueobject.BaseId;
+import org.pragma.creditya.model.shared.model.valueobject.BaseId;
 import org.pragma.creditya.model.user.exception.UserDomainException;
 
 public class UserName extends BaseId<String> {

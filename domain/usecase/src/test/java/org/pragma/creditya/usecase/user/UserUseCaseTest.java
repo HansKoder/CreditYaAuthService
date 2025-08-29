@@ -2,17 +2,28 @@ package org.pragma.creditya.usecase.user;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.pragma.creditya.model.user.User;
 import org.pragma.creditya.model.user.exception.UserDomainException;
 import org.pragma.creditya.model.user.gateways.UserRepository;
 import org.pragma.creditya.usecase.user.command.CreateUserCommand;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+
 public class UserUseCaseTest {
 
+    @InjectMocks
     private UserUseCase userUseCase;
+
+    @Mock
     private UserRepository userRepository;
 
     @BeforeEach
@@ -41,6 +52,32 @@ public class UserUseCaseTest {
                 }).verify();
     }
 
+    @Test
+    void shouldThrowExceptionWhenDBIsNotWorking () {
+        when(userRepository.save(any(User.class)))
+                .thenReturn(Mono.error(new RuntimeException("DB is not working")));
 
+        CreateUserCommand cmd = new CreateUserCommand("doe@gmail.com", "xxx");
+
+        StepVerifier.create(userUseCase.createUser(cmd))
+                .expectErrorSatisfies(throwable -> {
+                    assertEquals("DB is not working", throwable.getMessage());
+                    assertInstanceOf(Exception.class, throwable);
+                }).verify();
+    }
+
+    @Test
+    void shouldBePersistedUserWithSuccessful () {
+        User expected = User.create("doe@gmail.com", "xxx");
+
+        when(userRepository.save(any(User.class)))
+                .thenReturn(Mono.just(expected));
+
+        CreateUserCommand cmd = new CreateUserCommand("doe@gmail.com", "xxx");
+
+        StepVerifier.create(userUseCase.createUser(cmd))
+                .expectNext(expected)
+                .verifyComplete();
+    }
 
 }

@@ -2,7 +2,7 @@ package org.pragma.creditya.model.user;
 
 
 import lombok.Getter;
-import org.pragma.creditya.model.shared.domain.model.entity.AggregateRoot;
+import org.pragma.creditya.model.shared.model.entity.AggregateRoot;
 import org.pragma.creditya.model.user.valueobject.Password;
 import org.pragma.creditya.model.user.valueobject.UserName;
 

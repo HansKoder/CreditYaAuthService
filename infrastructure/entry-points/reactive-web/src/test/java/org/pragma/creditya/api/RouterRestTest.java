@@ -2,11 +2,28 @@ package org.pragma.creditya.api;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.pragma.creditya.api.dto.request.CreateUserRequest;
+import org.pragma.creditya.api.dto.response.ErrorResponse;
+import org.pragma.creditya.model.user.User;
+import org.pragma.creditya.model.user.exception.UserDomainException;
+import org.pragma.creditya.usecase.user.command.CreateUserCommand;
+import org.pragma.creditya.usecase.user.ports.in.IUserUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Mono;
+
+import java.sql.SQLException;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @ContextConfiguration(classes = {RouterRest.class, Handler.class})
 @WebFluxTest
@@ -15,46 +32,61 @@ class RouterRestTest {
     @Autowired
     private WebTestClient webTestClient;
 
-    @Test
-    void testListenGETUseCase() {
-        webTestClient.get()
-                .uri("/api/usecase/path")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(String.class)
-                .value(userResponse -> {
-                            Assertions.assertThat(userResponse).isEmpty();
-                        }
-                );
-    }
+    @MockitoBean
+    IUserUseCase userUseCase;
 
     @Test
-    void testListenGETOtherUseCase() {
-        webTestClient.get()
-                .uri("/api/otherusercase/path")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(String.class)
-                .value(userResponse -> {
-                            Assertions.assertThat(userResponse).isEmpty();
-                        }
-                );
-    }
+    void shouldCreateUserWithSuccessful() {
+        User user = User.create("doe@gmail.com", "123");
+        when(userUseCase.createUser(any(CreateUserCommand.class)))
+                        .thenReturn(Mono.just(user));
 
-    @Test
-    void testListenPOSTUseCase() {
         webTestClient.post()
-                .uri("/api/usecase/otherpath")
+                .uri("/api/auth")
                 .accept(MediaType.APPLICATION_JSON)
-                .bodyValue("")
+                .bodyValue(new CreateUserRequest("doe@gmail.com", "123"))
                 .exchange()
-                .expectStatus().isOk()
-                .expectBody(String.class)
-                .value(userResponse -> {
-                            Assertions.assertThat(userResponse).isEmpty();
+                .expectStatus().isCreated()
+                .expectBody(Void.class);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUsernameIsEmpty() {
+        when(userUseCase.createUser(any(CreateUserCommand.class)))
+                        .thenReturn(Mono.error(new UserDomainException("Username must be mandatory")));
+
+        webTestClient.post()
+                .uri("/api/auth")
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(new CreateUserRequest(" ", "123"))
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody(ErrorResponse.class)
+                .value(errorResponse -> {
+                            assertEquals(400, errorResponse.status());
+                            assertEquals("Username must be mandatory", errorResponse.message());
                         }
-                );
+                );;
+
+    }
+
+    @Test
+    void shouldThrowExceptionWhenSQLHasInvalidQuery() {
+        when(userUseCase.createUser(any(CreateUserCommand.class)))
+                        .thenReturn(Mono.error(new SQLException("Bad SQL")));
+
+        webTestClient.post()
+                .uri("/api/auth")
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(new CreateUserRequest("doe@gmail.com", "123"))
+                .exchange()
+                .expectStatus().is5xxServerError()
+                .expectBody(ErrorResponse.class)
+                .value(errorResponse -> {
+                            assertEquals(500, errorResponse.status());
+                            assertEquals("Bad SQL", errorResponse.message());
+                        }
+                );;
+
     }
 }

@@ -1,4 +1,4 @@
-package org.pragma.creditya.model.shared.domain.model.valueobject;
+package org.pragma.creditya.model.shared.model.valueobject;
 
 import java.util.Objects;
 
