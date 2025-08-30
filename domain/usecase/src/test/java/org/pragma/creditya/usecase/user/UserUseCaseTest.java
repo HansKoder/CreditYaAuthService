@@ -1,12 +1,14 @@
 package org.pragma.creditya.usecase.user;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.pragma.creditya.model.user.User;
 import org.pragma.creditya.model.user.exception.UserDomainException;
+import org.pragma.creditya.model.user.exception.UsernameIsNotAvailableDomainException;
 import org.pragma.creditya.model.user.gateways.UserRepository;
 import org.pragma.creditya.usecase.user.command.CreateUserCommand;
 import reactor.core.publisher.Mono;
@@ -15,8 +17,8 @@ import reactor.test.StepVerifier;
 import static org.junit.jupiter.api.Assertions.*;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 public class UserUseCaseTest {
 
@@ -53,24 +55,54 @@ public class UserUseCaseTest {
     }
 
     @Test
+    @DisplayName(value = "Should Throw Exception UsernameIsNotAvailableDomainException when try to persist another record with the same username")
+    void shouldThrowExceptionWhenUsernameIsNotAvailable () {
+        User usernameIsUsed = User.create("doe@gmail.com", "xxx");
+
+        when(userRepository.findById(anyString()))
+                .thenReturn(Mono.just(usernameIsUsed));
+
+        CreateUserCommand cmd = new CreateUserCommand("doe@gmail.com", "xxx");
+
+        StepVerifier.create(userUseCase.createUser(cmd))
+                .expectErrorSatisfies(throwable -> {
+                    assertEquals("Username doe@gmail.com is not available", throwable.getMessage());
+                    assertInstanceOf(UsernameIsNotAvailableDomainException.class, throwable);
+                }).verify();
+
+        verify(userRepository, Mockito.times(1)).findById(anyString());
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
     void shouldThrowExceptionWhenDBIsNotWorking () {
+        when(userRepository.findById(anyString()))
+                .thenReturn(Mono.empty());
+
         when(userRepository.save(any(User.class)))
                 .thenReturn(Mono.error(new RuntimeException("DB is not working")));
 
         CreateUserCommand cmd = new CreateUserCommand("doe@gmail.com", "xxx");
+
 
         StepVerifier.create(userUseCase.createUser(cmd))
                 .expectErrorSatisfies(throwable -> {
                     assertEquals("DB is not working", throwable.getMessage());
                     assertInstanceOf(Exception.class, throwable);
                 }).verify();
+
+        verify(userRepository, Mockito.times(1)).findById(anyString());
+        verify(userRepository, Mockito.times(1)).save(any(User.class));
     }
 
     @Test
     void shouldBePersistedUserWithSuccessful () {
         User expected = User.create("doe@gmail.com", "xxx");
 
-        when(userRepository.save(any(User.class)))
+        when(userRepository.findById(anyString()))
+                .thenReturn(Mono.empty());
+
+        when(userRepository.save(expected))
                 .thenReturn(Mono.just(expected));
 
         CreateUserCommand cmd = new CreateUserCommand("doe@gmail.com", "xxx");
@@ -78,6 +110,9 @@ public class UserUseCaseTest {
         StepVerifier.create(userUseCase.createUser(cmd))
                 .expectNext(expected)
                 .verifyComplete();
+
+        verify(userRepository, Mockito.times(1)).findById(anyString());
+        verify(userRepository, Mockito.times(1)).save(any(User.class));
     }
 
 }

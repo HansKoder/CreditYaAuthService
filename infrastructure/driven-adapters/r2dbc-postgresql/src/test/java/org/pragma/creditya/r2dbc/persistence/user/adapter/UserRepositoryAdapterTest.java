@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,6 +54,25 @@ public class UserRepositoryAdapterTest {
                 .expectNextMatches(value -> value.equals(expected))
                 .verifyComplete();
     }
+
+    @Test
+    void mustFindValueById() {
+        UserEntity persisted = new UserEntity();
+        persisted.setUsername("doe@gmail.com");
+        persisted.setPassword("123");
+
+        User expected = User.create("doe@gmail.com", "123");
+
+        when(repository.findById(anyString())).thenReturn(Mono.just(persisted));
+        when(mapper.toEntity(any())).thenReturn(expected);
+
+        Mono<User> result = repositoryAdapter.findById("1");
+
+        StepVerifier.create(result)
+                .expectNextMatches(value -> value.equals(expected))
+                .verifyComplete();
+    }
+
 
 
 }

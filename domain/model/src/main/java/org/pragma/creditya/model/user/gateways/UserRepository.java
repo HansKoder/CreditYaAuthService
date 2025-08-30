@@ -5,4 +5,5 @@ import reactor.core.publisher.Mono;
 
 public interface UserRepository {
     Mono<User> save(User domain);
+    Mono<User> findById (String username);
 }
