@@ -59,7 +59,7 @@ public class UserUseCaseTest {
     void shouldThrowExceptionWhenUsernameIsNotAvailable () {
         User usernameIsUsed = User.create("doe@gmail.com", "xxx");
 
-        when(userRepository.findById(anyString()))
+        when(userRepository.findById("doe@gmail.com"))
                 .thenReturn(Mono.just(usernameIsUsed));
 
         CreateUserCommand cmd = new CreateUserCommand("doe@gmail.com", "xxx");

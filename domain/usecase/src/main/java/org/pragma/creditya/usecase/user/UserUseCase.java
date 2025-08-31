@@ -21,11 +21,8 @@ public class UserUseCase implements IUserUseCase {
     }
 
     private Mono<User> checkUsernameIsAvailable (User user) {
-        return Mono.just(user)
-                .map(param -> param.getId().getValue())
-                .flatMap(userRepository::findById)
-                .doOnSuccess(exist -> Mono.error(new UsernameIsNotAvailableDomainException("ist no ..")))
-                .defaultIfEmpty(user);
+        return userRepository.findById(user.getId().getValue())
+                .flatMap(exist -> Mono.error(new UsernameIsNotAvailableDomainException("xx")));
     }
 
     private User checkUser (CreateUserCommand command) {
