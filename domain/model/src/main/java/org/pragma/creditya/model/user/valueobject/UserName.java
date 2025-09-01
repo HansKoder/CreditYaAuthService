@@ -6,7 +6,7 @@ import org.pragma.creditya.model.user.exception.UserDomainException;
 public class UserName extends BaseId<String> {
     public UserName(String value) {
         super(value);
-        validationsPassword();
+        validationsUsername();
     }
 
     private void usernameMustBeMandatory () {
@@ -19,7 +19,7 @@ public class UserName extends BaseId<String> {
             throw new UserDomainException("Username should have an valid email format");
     }
 
-    private void validationsPassword () {
+    private void validationsUsername () {
         usernameMustBeMandatory();
         validateFormatEmail();
     }

@@ -2,6 +2,8 @@ package org.pragma.creditya.config;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.pragma.creditya.model.user.gateways.UserRepository;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class UseCasesConfigTest {
 
     @Test
-    @Disabled
     void testUseCaseBeansExist() {
         try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(TestConfig.class)) {
             String[] beanNames = context.getBeanDefinitionNames();
@@ -35,6 +36,11 @@ public class UseCasesConfigTest {
         @Bean
         public MyUseCase myUseCase() {
             return new MyUseCase();
+        }
+
+        @Bean
+        public UserRepository mockRepository () {
+            return Mockito.mock(UserRepository.class);
         }
     }
 

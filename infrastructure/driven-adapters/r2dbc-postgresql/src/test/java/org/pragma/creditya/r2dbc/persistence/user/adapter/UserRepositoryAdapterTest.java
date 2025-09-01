@@ -14,8 +14,9 @@ import org.pragma.creditya.r2dbc.persistence.user.repository.UserReactiveReposit
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.util.UUID;
+
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,16 +58,19 @@ public class UserRepositoryAdapterTest {
 
     @Test
     void mustFindValueById() {
+        UUID userId = UUID.fromString("5b87a0d6-2fed-4db7-aa49-49663f719659");
+
         UserEntity persisted = new UserEntity();
+        persisted.setUserId(userId);
         persisted.setUsername("doe@gmail.com");
         persisted.setPassword("123");
 
         User expected = User.create("doe@gmail.com", "123");
 
-        when(repository.findById(anyString())).thenReturn(Mono.just(persisted));
+        when(repository.findById(userId)).thenReturn(Mono.just(persisted));
         when(mapper.toEntity(any())).thenReturn(expected);
 
-        Mono<User> result = repositoryAdapter.findById("1");
+        Mono<User> result = repositoryAdapter.findById(userId);
 
         StepVerifier.create(result)
                 .expectNextMatches(value -> value.equals(expected))

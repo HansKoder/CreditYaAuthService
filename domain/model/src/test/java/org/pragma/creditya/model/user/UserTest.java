@@ -55,11 +55,13 @@ public class UserTest {
     @Test
     void shouldCreateUserWithSuccess () {
         User domain = User.create("jhon.doe@gmail.com", "password");
+
         assertNotNull(domain);
         assertNotNull(domain.getPassword().value());
-        assertNotNull(domain.getId().getValue());
+        assertNotNull(domain.getUserName().getValue());
+        assertNull(domain.getId());
 
-        assertEquals("jhon.doe@gmail.com", domain.getId().getValue());
+        assertEquals("jhon.doe@gmail.com", domain.getUserName().getValue());
         assertEquals("password", domain.getPassword().value());
     }
 

@@ -57,10 +57,8 @@ public class UserUseCaseTest {
     @Test
     @DisplayName(value = "Should Throw Exception UsernameIsNotAvailableDomainException when try to persist another record with the same username")
     void shouldThrowExceptionWhenUsernameIsNotAvailable () {
-        User usernameIsUsed = User.create("doe@gmail.com", "xxx");
-
-        when(userRepository.findById("doe@gmail.com"))
-                .thenReturn(Mono.just(usernameIsUsed));
+        when(userRepository.existUsername("doe@gmail.com"))
+                .thenReturn(Mono.just(Boolean.TRUE));
 
         CreateUserCommand cmd = new CreateUserCommand("doe@gmail.com", "xxx");
 
@@ -70,20 +68,19 @@ public class UserUseCaseTest {
                     assertInstanceOf(UsernameIsNotAvailableDomainException.class, throwable);
                 }).verify();
 
-        verify(userRepository, Mockito.times(1)).findById(anyString());
+        verify(userRepository, Mockito.times(1)).existUsername(anyString());
         verify(userRepository, never()).save(any(User.class));
     }
 
     @Test
     void shouldThrowExceptionWhenDBIsNotWorking () {
-        when(userRepository.findById(anyString()))
-                .thenReturn(Mono.empty());
+        when(userRepository.existUsername("doe@gmail.com"))
+                .thenReturn(Mono.just(Boolean.FALSE));
 
         when(userRepository.save(any(User.class)))
                 .thenReturn(Mono.error(new RuntimeException("DB is not working")));
 
         CreateUserCommand cmd = new CreateUserCommand("doe@gmail.com", "xxx");
-
 
         StepVerifier.create(userUseCase.createUser(cmd))
                 .expectErrorSatisfies(throwable -> {
@@ -91,7 +88,7 @@ public class UserUseCaseTest {
                     assertInstanceOf(Exception.class, throwable);
                 }).verify();
 
-        verify(userRepository, Mockito.times(1)).findById(anyString());
+        verify(userRepository, Mockito.times(1)).existUsername("doe@gmail.com");
         verify(userRepository, Mockito.times(1)).save(any(User.class));
     }
 
@@ -99,8 +96,8 @@ public class UserUseCaseTest {
     void shouldBePersistedUserWithSuccessful () {
         User expected = User.create("doe@gmail.com", "xxx");
 
-        when(userRepository.findById(anyString()))
-                .thenReturn(Mono.empty());
+        when(userRepository.existUsername("doe@gmail.com"))
+                .thenReturn(Mono.just(Boolean.FALSE));
 
         when(userRepository.save(expected))
                 .thenReturn(Mono.just(expected));
@@ -111,7 +108,7 @@ public class UserUseCaseTest {
                 .expectNext(expected)
                 .verifyComplete();
 
-        verify(userRepository, Mockito.times(1)).findById(anyString());
+        verify(userRepository, Mockito.times(1)).existUsername(anyString());
         verify(userRepository, Mockito.times(1)).save(any(User.class));
     }
 

@@ -21,8 +21,16 @@ public class UserUseCase implements IUserUseCase {
     }
 
     private Mono<User> checkUsernameIsAvailable (User user) {
-        return userRepository.findById(user.getId().getValue())
-                .flatMap(exist -> Mono.error(new UsernameIsNotAvailableDomainException("xx")));
+        return userRepository.existUsername(user.getUserName().getValue())
+                .flatMap(exist -> {
+                    if (exist) {
+                        String err = String.format("Username %s is not available", user.getUserName().getValue());
+                        return Mono.error(new UsernameIsNotAvailableDomainException(err));
+                    }
+
+                    return Mono.just(user);
+                });
+
     }
 
     private User checkUser (CreateUserCommand command) {
