@@ -14,10 +14,10 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
-public class RouterRest {
+public class AuthRouterRest {
 
     @Bean
-    public RouterFunction<ServerResponse> routerFunction(Handler handler) {
+    public RouterFunction<ServerResponse> routerFunction(AuthHandler handler) {
         return route(POST("/api/auth"), handler::createUser)
                 .filter(domainErrorMapper());
     }

@@ -1,11 +1,9 @@
 package org.pragma.creditya.api;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.pragma.creditya.api.dto.request.CreateUserRequest;
 import org.pragma.creditya.api.dto.response.ErrorResponse;
+import org.pragma.creditya.api.dto.response.GetUserResponse;
 import org.pragma.creditya.model.user.User;
 import org.pragma.creditya.model.user.exception.UserDomainException;
 import org.pragma.creditya.usecase.user.command.CreateUserCommand;
@@ -19,13 +17,14 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.sql.SQLException;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@ContextConfiguration(classes = {RouterRest.class, Handler.class})
+@ContextConfiguration(classes = {AuthRouterRest.class, AuthHandler.class})
 @WebFluxTest
 class RouterRestTest {
 
@@ -37,7 +36,9 @@ class RouterRestTest {
 
     @Test
     void shouldCreateUserWithSuccessful() {
-        User user = User.create("doe@gmail.com", "123");
+        UUID userId = UUID.fromString("5b87a0d6-2fed-4db7-aa49-49663f719659");
+        User user = User.rebuild(userId, "doe@gmail.com", "123");
+
         when(userUseCase.createUser(any(CreateUserCommand.class)))
                         .thenReturn(Mono.just(user));
 
@@ -47,7 +48,11 @@ class RouterRestTest {
                 .bodyValue(new CreateUserRequest("doe@gmail.com", "123"))
                 .exchange()
                 .expectStatus().isCreated()
-                .expectBody(Void.class);
+                .expectBody(GetUserResponse.class)
+                .value(persisted -> {
+                    assertEquals("5b87a0d6-2fed-4db7-aa49-49663f719659", persisted.userId());
+                    assertEquals("doe@gmail.com", persisted.username());
+                });
     }
 
     @Test

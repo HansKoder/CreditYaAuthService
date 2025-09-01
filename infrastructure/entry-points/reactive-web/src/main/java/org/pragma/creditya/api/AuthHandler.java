@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
-public class Handler {
+public class AuthHandler {
 
     private final IUserUseCase userUseCase;
 
@@ -20,7 +20,8 @@ public class Handler {
         return serverRequest.bodyToMono(CreateUserRequest.class)
                 .map(UserRestMapper::toCommand)
                 .flatMap(userUseCase::createUser)
-                .flatMap(user -> ServerResponse.status(HttpStatus.CREATED).build());
+                .map(UserRestMapper::toResponse)
+                .flatMap(response -> ServerResponse.status(HttpStatus.CREATED).bodyValue(response));
     }
 
 }

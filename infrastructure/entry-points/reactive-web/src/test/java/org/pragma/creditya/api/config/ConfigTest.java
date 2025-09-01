@@ -1,7 +1,7 @@
 package org.pragma.creditya.api.config;
 
-import org.pragma.creditya.api.Handler;
-import org.pragma.creditya.api.RouterRest;
+import org.pragma.creditya.api.AuthHandler;
+import org.pragma.creditya.api.AuthRouterRest;
 import org.junit.jupiter.api.Test;
 import org.pragma.creditya.api.dto.request.CreateUserRequest;
 import org.pragma.creditya.model.user.User;
@@ -16,10 +16,12 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@ContextConfiguration(classes = {RouterRest.class, Handler.class})
+@ContextConfiguration(classes = {AuthRouterRest.class, AuthHandler.class})
 @WebFluxTest
 @Import({CorsConfig.class, SecurityHeadersConfig.class})
 class ConfigTest {
@@ -32,14 +34,16 @@ class ConfigTest {
 
     @Test
     void corsConfigurationShouldAllowOrigins() {
-        User user = User.create("doe@gmail.com", "123");
+        UUID userId = UUID.fromString("5b87a0d6-2fed-4db7-aa49-49663f719659");
+        User user = User.rebuild(userId,"doe@gmail.com", "123");
+
         when(userUseCase.createUser(any(CreateUserCommand.class)))
                 .thenReturn(Mono.just(user));
 
         webTestClient.post()
                 .uri("/api/auth")
                 .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(new CreateUserRequest(" ", "123"))
+                .bodyValue(new CreateUserRequest("doe@gmail.com", "123"))
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().valueEquals("Content-Security-Policy",

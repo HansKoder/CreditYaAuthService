@@ -11,6 +11,7 @@ import org.pragma.creditya.model.user.User;
 import org.pragma.creditya.r2dbc.persistence.user.entity.UserEntity;
 import org.pragma.creditya.r2dbc.persistence.user.mapper.UserMapper;
 import org.pragma.creditya.r2dbc.persistence.user.repository.UserReactiveRepository;
+import org.springframework.data.domain.Example;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -74,6 +75,17 @@ public class UserRepositoryAdapterTest {
 
         StepVerifier.create(result)
                 .expectNextMatches(value -> value.equals(expected))
+                .verifyComplete();
+    }
+
+
+    @Test
+    void shouldReturnTrueWhenUserWasPersistedBefore() {
+        when(repository.exists(any(Example.class)))
+                .thenReturn(Mono.just(Boolean.TRUE));
+
+        StepVerifier.create(repositoryAdapter.existUsername("doe@gmail.com"))
+                .expectNext(Boolean.TRUE)
                 .verifyComplete();
     }
 
