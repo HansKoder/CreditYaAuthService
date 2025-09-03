@@ -39,7 +39,7 @@ bootJar {
     archiveFileName = "${project.getParent().getName()}.${archiveExtension.get()}"
 }
 
-
+// Integration test
 sourceSets {
     integrationTest {
         java.srcDir file('src/integrationTest/java')

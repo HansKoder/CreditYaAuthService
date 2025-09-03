@@ -1,6 +1,5 @@
 package org.pragma.creditya.config;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.pragma.creditya.model.user.gateways.UserRepository;
