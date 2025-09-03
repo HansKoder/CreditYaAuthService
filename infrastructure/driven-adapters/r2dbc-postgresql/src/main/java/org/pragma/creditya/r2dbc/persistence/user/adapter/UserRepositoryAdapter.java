@@ -30,4 +30,9 @@ public class UserRepositoryAdapter extends ReactiveAdapterOperations<
 
         return repository.exists(Example.of(filter));
     }
+
+    @Override
+    public Mono<User> findByUsername(String username) {
+        return null;
+    }
 }

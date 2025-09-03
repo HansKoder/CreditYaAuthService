@@ -28,4 +28,13 @@ public class User extends AggregateRoot<UserId> {
         return new User(new UserId(userId), new UserName(username), new Password(password));
     }
 
+    // Rebuild
+    // builder + factory taking example
+
+    // add vo
+    // Lock
+    // Enable
+
+
+
 }
