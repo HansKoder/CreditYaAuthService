@@ -18,4 +18,8 @@ public record Retry(Integer cant) {
 
         return new Retry(cant - 1);
     }
+
+    public Retry reset(Integer cant) {
+        return new Retry(cant);
+    }
 }

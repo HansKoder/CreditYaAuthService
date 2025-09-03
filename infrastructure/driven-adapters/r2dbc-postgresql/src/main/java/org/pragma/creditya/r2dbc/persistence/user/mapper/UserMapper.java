@@ -22,6 +22,11 @@ public class UserMapper implements CustomMapper<User, UserEntity> {
 
     @Override
     public User toEntity(UserEntity data) {
-        return User.rebuild(data.getUserId(), data.getUsername(), data.getPassword());
+        // return User.rebuild(data.getUserId(), data.getUsername(), data.getPassword());
+        return User.Builder.anUser()
+                .id(data.getUserId())
+                .userName(data.getUsername())
+                .password(data.getPassword())
+                .build();
     }
 }

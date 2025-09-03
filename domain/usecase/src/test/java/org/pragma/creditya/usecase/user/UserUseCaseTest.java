@@ -94,7 +94,7 @@ public class UserUseCaseTest {
 
     @Test
     void shouldBePersistedUserWithSuccessful () {
-        User expected = User.create("doe@gmail.com", "xxx");
+        User expected = User.createUser("doe@gmail.com", "xxx");
 
         when(userRepository.existUsername("doe@gmail.com"))
                 .thenReturn(Mono.just(Boolean.FALSE));

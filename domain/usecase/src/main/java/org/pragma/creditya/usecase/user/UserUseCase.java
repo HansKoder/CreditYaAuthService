@@ -34,6 +34,6 @@ public class UserUseCase implements IUserUseCase {
     }
 
     private User checkUser (CreateUserCommand command) {
-        return User.create(command.username(), command.password());
+        return User.createUser(command.username(), command.password());
     }
 }

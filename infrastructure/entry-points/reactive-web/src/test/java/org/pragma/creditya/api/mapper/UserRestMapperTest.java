@@ -27,7 +27,12 @@ public class UserRestMapperTest {
     @Test
     void shouldMapToResponse () {
         UUID userId = UUID.fromString("5b87a0d6-2fed-4db7-aa49-49663f719659");
-        User entity = User.rebuild(userId, "doe@gmail.com", "password");
+        // User entity = User.rebuild(userId, "doe@gmail.com", "password");
+        User entity = User.Builder.anUser()
+                .id(userId)
+                .userName("doe@gmail.com")
+                .password("password")
+                .build();
 
         GetUserResponse response = UserRestMapper.toResponse(entity);
 

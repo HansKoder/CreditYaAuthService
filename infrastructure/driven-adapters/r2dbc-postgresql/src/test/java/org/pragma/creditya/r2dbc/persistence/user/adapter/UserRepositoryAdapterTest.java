@@ -46,7 +46,11 @@ public class UserRepositoryAdapterTest {
         persisted.setUsername("doe@gmail.com");
         persisted.setPassword("123");
 
-        User expected = User.create("doe@gmail.com", "123");
+        // User expected = User.create("doe@gmail.com", "123");
+        User expected = User.Builder.anUser()
+                .userName("doe@gmail.com")
+                .password("123")
+                .build();
 
         when(repository.save(any())).thenReturn(Mono.just(persisted));
         when(mapper.toData(any())).thenReturn(persisted);
@@ -66,7 +70,12 @@ public class UserRepositoryAdapterTest {
         persisted.setUsername("doe@gmail.com");
         persisted.setPassword("123");
 
-        User expected = User.create("doe@gmail.com", "123");
+        // User expected = User.create("doe@gmail.com", "123");
+        User expected = User.Builder.anUser()
+                .userName("doe@gmail.com")
+                .password("123")
+                .build();
+
 
         when(repository.findById(userId)).thenReturn(Mono.just(persisted));
         when(mapper.toEntity(any())).thenReturn(expected);

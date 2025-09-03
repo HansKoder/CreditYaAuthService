@@ -36,7 +36,12 @@ public class UserMapperTest {
     @DisplayName("Should be mapped to data, this data should have userID")
     void shouldBeMappedToData () {
         UUID userId = UUID.fromString("5b87a0d6-2fed-4db7-aa49-49663f719659");
-        User entity = User.rebuild(userId, "doe@gmail.com", "1234");
+        // User entity = User.rebuild(userId, "doe@gmail.com", "1234");
+        User entity = User.Builder.anUser()
+                .id(userId)
+                .userName("doe@gmail.com")
+                .password("1234")
+                .build();
 
         UserEntity data = userMapper.toData(entity);
 
@@ -48,7 +53,10 @@ public class UserMapperTest {
     @Test
     @DisplayName("Should be mapped to data, this data should be without userId")
     void shouldBeMappedToDataWithoutUserId () {
-        User entity = User.create("doe@gmail.com", "1234");
+        User entity = User.Builder.anUser()
+                .userName("doe@gmail.com")
+                .password("1234")
+                .build();
 
         UserEntity data = userMapper.toData(entity);
 

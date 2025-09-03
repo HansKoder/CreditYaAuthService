@@ -37,7 +37,12 @@ class RouterRestTest {
     @Test
     void shouldCreateUserWithSuccessful() {
         UUID userId = UUID.fromString("5b87a0d6-2fed-4db7-aa49-49663f719659");
-        User user = User.rebuild(userId, "doe@gmail.com", "123");
+        // User user = User.rebuild(userId, "doe@gmail.com", "123");
+        User user = User.Builder.anUser()
+                .id(userId)
+                .userName("doe@gmail.com")
+                .password("123")
+                .build();
 
         when(userUseCase.createUser(any(CreateUserCommand.class)))
                         .thenReturn(Mono.just(user));

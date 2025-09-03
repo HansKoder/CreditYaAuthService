@@ -52,4 +52,16 @@ public class RetryTest {
         assertEquals("Limit to decrease is until zero", exception.getMessage());
     }
 
+    @Test
+    void shouldResetWithSuccessful () {
+        Retry retry = new Retry(THRESHOLD)
+                .decrease()
+                .decrease()
+                .decrease();
+
+        assertEquals(0, retry.cant());
+        assertEquals(3, retry.reset(THRESHOLD).cant());
+
+    }
+
 }
