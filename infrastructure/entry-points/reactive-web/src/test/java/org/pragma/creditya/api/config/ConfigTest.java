@@ -1,15 +1,27 @@
 package org.pragma.creditya.api.config;
 
-import org.pragma.creditya.api.Handler;
-import org.pragma.creditya.api.RouterRest;
+import org.pragma.creditya.api.AuthHandler;
+import org.pragma.creditya.api.AuthRouterRest;
 import org.junit.jupiter.api.Test;
+import org.pragma.creditya.api.dto.request.CreateUserRequest;
+import org.pragma.creditya.model.user.User;
+import org.pragma.creditya.usecase.user.command.CreateUserCommand;
+import org.pragma.creditya.usecase.user.ports.in.IUserUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Mono;
 
-@ContextConfiguration(classes = {RouterRest.class, Handler.class})
+import java.util.UUID;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+@ContextConfiguration(classes = {AuthRouterRest.class, AuthHandler.class})
 @WebFluxTest
 @Import({CorsConfig.class, SecurityHeadersConfig.class})
 class ConfigTest {
@@ -17,12 +29,23 @@ class ConfigTest {
     @Autowired
     private WebTestClient webTestClient;
 
+    @MockitoBean
+    IUserUseCase userUseCase;
+
     @Test
     void corsConfigurationShouldAllowOrigins() {
-        webTestClient.get()
-                .uri("/api/usecase/path")
+        UUID userId = UUID.fromString("5b87a0d6-2fed-4db7-aa49-49663f719659");
+        User user = User.rebuild(userId,"doe@gmail.com", "123");
+
+        when(userUseCase.createUser(any(CreateUserCommand.class)))
+                .thenReturn(Mono.just(user));
+
+        webTestClient.post()
+                .uri("/api/auth")
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(new CreateUserRequest("doe@gmail.com", "123"))
                 .exchange()
-                .expectStatus().isOk()
+                .expectStatus().isCreated()
                 .expectHeader().valueEquals("Content-Security-Policy",
                         "default-src 'self'; frame-ancestors 'self'; form-action 'self'")
                 .expectHeader().valueEquals("Strict-Transport-Security", "max-age=31536000;")

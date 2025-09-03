@@ -1,0 +1,15 @@
+services:
+
+  liquibase:
+    container_name: liquibase
+    image: liquibase/liquibase
+    command: update --changelog-file=changelog.xml --username=auth_user --password=auth_pass --url=jdbc:postgresql://credit_auth_db:5432/credit_auth_db
+    volumes:
+      - ./config/changelog.xml:/liquibase/changelog.xml
+      - ./scripts:/liquibase/scripts
+    networks:
+      - credit_network
+
+networks:
+  credit_network:
+    external: true

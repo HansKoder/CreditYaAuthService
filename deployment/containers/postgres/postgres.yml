@@ -1,0 +1,21 @@
+services:
+  credit_auth_db:
+    image: postgres:15
+    container_name: credit_auth_db
+    environment:
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_pass
+      POSTGRES_DB: credit_auth_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - credit_auth_data:/var/lib/postgresql/data
+    networks:
+      - credit_network
+
+volumes:
+  credit_auth_data:
+
+networks:
+  credit_network:
+    external: true

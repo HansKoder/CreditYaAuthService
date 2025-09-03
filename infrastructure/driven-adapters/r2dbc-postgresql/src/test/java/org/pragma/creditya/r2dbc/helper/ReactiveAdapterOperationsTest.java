@@ -34,7 +34,6 @@ class ReactiveAdapterOperationsTest {
         DummyEntity entity = new DummyEntity("1", "test");
         DummyData data = new DummyData("1", "test");
 
-        // when(mapper.map(entity, DummyData.class)).thenReturn(data);
         when(mapper.toData(entity)).thenReturn(data);
         when(repository.save(data)).thenReturn(Mono.just(data));
 
@@ -50,11 +49,9 @@ class ReactiveAdapterOperationsTest {
         DummyData data1 = new DummyData("1", "test1");
         DummyData data2 = new DummyData("2", "test2");
 
-        // when(mapper.map(entity1, DummyData.class)).thenReturn(data1);
         when(mapper.toData(entity1)).thenReturn(data1);
         when(mapper.toData(entity2)).thenReturn(data2);
 
-        // when(mapper.map(entity2, DummyData.class)).thenReturn(data2);
         when(repository.saveAll(any(Flux.class))).thenReturn(Flux.just(data1, data2));
 
         StepVerifier.create(operations.saveAllEntities(Flux.just(entity1, entity2)))
@@ -79,7 +76,6 @@ class ReactiveAdapterOperationsTest {
         DummyEntity entity = new DummyEntity("1", "test");
         DummyData data = new DummyData("1", "test");
 
-        // when(mapper.map(entity, DummyData.class)).thenReturn(data);
         when(mapper.toData(entity)).thenReturn(data);
         when(repository.findAll(any(Example.class))).thenReturn(Flux.just(data));
 

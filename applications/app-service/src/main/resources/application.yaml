@@ -11,6 +11,18 @@ spring:
       path: "/h2"
   profiles:
     include: null
+  # Configuración JDBC (para Liquibase)
+  datasource:
+    url: jdbc:postgresql://localhost:5432/credit_user_db
+    username: credit_user
+    password: credit_pass
+    driver-class-name: org.postgresql.Driver
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+
 management:
   endpoints:
     web:
@@ -25,10 +37,10 @@ adapters:
   r2dbc:
     host: "${POSTGRES_HOST:localhost}"
     port: "${POSTGRES_PORT:5432}"
-    database: "${POSTGRES_DB:credit_user_db}"
+    database: "${POSTGRES_DB:credit_auth_db}"
     schema: "public"
-    username: "${POSTGRES_USER:credit_user}"
-    password: "${POSTGRES_PASSWORD:credit_pass}"
+    username: "${POSTGRES_USER:auth_user}"
+    password: "${POSTGRES_USER:auth_pass}"
 
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
