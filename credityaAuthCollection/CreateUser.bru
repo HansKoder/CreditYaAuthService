@@ -5,9 +5,14 @@ meta {
 }
 
 post {
-  url: http://localhost:9080/api/auth
+  url: http://localhost:9080/api/v1/user
   body: json
-  auth: inherit
+  auth: basic
+}
+
+auth:basic {
+  username: user
+  password: 1f58e49d-da4a-4085-a5d3-cc0b2b1526ee
 }
 
 body:json {

@@ -2,9 +2,11 @@ dependencies {
     implementation project(':model')
     implementation 'org.springframework:spring-context'
 
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'com.auth0:java-jwt:4.5.0'
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
-    testImplementation 'org.springframework.security:spring-security-test'
+    // Security
+    implementation("org.springframework.boot:spring-boot-starter-security")
 
+    //JWT
+    implementation("io.jsonwebtoken:jjwt-api:0.12.3")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.3")
 }

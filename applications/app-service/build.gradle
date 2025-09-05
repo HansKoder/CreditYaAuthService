@@ -2,6 +2,7 @@ apply plugin: 'org.springframework.boot'
 
 dependencies {
 	implementation project(':security')
+	implementation project(':infra-common')
 	implementation project(':reactive-web')
 	implementation 'org.reactivecommons.utils:object-mapper:0.1.0'
 	implementation project(':r2dbc-postgresql')

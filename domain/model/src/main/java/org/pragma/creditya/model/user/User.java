@@ -38,23 +38,23 @@ public class User extends AggregateRoot<UserId> {
 
     public void checkCreationUser() {
         checkWithoutId();
-        checkIsLocked();
+        // checkIsLocked();
+
     }
 
-    public void checkLogin () {
-        checkIsLocked();
-        hasAnotherRetry();
+    public void checkIsLocked () {
+        if (lock != null && lock.isLock() != null && lock.isLock())
+            throw new UserLockedDomainException("User " + getNameOrAnonymous() + " is Locked, invalid any operation until new order");
     }
 
-    private void lockUser () {
-        lock = lock.disabled();
-        throw new UserLockedDomainException("User " + getNameOrAnonymous() + " is Locked, invalid any operation until new order");
+    public boolean shouldBeBlocked () {
+        if (retry.hasAnotherRetry()) return false;
+
+        lock = lock.enabled();
+        return true;
     }
 
-    private void hasAnotherRetry () {
-        if (retry.cant() == 0)
-            lockUser();
-
+    public void loginFailed () {
         retry = retry.decrease();
     }
 
@@ -67,10 +67,6 @@ public class User extends AggregateRoot<UserId> {
         return userName == null || userName.getValue() == null ? "anonymous" : userName.getValue();
     }
 
-    private void checkIsLocked () {
-        if (lock != null && lock.isLock() != null && lock.isLock())
-            throw new UserLockedDomainException("User " + getNameOrAnonymous() + " is Locked, invalid any operation until new order");
-    }
 
 
 

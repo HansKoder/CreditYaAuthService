@@ -8,7 +8,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.pragma.creditya.model.user.User;
 import org.pragma.creditya.model.user.exception.UserDomainException;
-import org.pragma.creditya.model.user.exception.UsernameIsNotAvailableDomainException;
+import org.pragma.creditya.model.user.exception.UsernameIsNotAllowedDomainException;
+import org.pragma.creditya.model.user.gateways.EncodeProvider;
 import org.pragma.creditya.model.user.gateways.UserRepository;
 import org.pragma.creditya.usecase.user.command.CreateUserCommand;
 import reactor.core.publisher.Mono;
@@ -28,14 +29,24 @@ public class UserUseCaseTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private EncodeProvider encodeProvider;
+
+    private final String EXAMPLE_ENCODE_PASS = "$2y$10$X0Ix./OAjN8.RgkolvdYzOmSBGuTFIsKfu6BmYFBPVMgdcNyD2sxK";
+
     @BeforeEach
     void setup () {
         userRepository = Mockito.mock(UserRepository.class);
-        userUseCase = new UserUseCase(userRepository);
+        encodeProvider = Mockito.mock(EncodeProvider.class);
+
+        userUseCase = new UserUseCase(userRepository, encodeProvider);
     }
 
     @Test
     void shouldThrowExceptionWhenUserNameIsNull () {
+        when(encodeProvider.encode(anyString()))
+                .thenReturn("");
+
         CreateUserCommand cmd = new CreateUserCommand(null, "123456");
         StepVerifier.create(userUseCase.createUser(cmd))
                 .expectErrorSatisfies(throwable -> {
@@ -46,6 +57,9 @@ public class UserUseCaseTest {
 
     @Test
     void shouldThrowExceptionWhenPasswordIsEmpty () {
+        when(encodeProvider.encode(anyString()))
+                .thenReturn("");
+
         CreateUserCommand cmd = new CreateUserCommand("doe@gmail.com", " ");
         StepVerifier.create(userUseCase.createUser(cmd))
                 .expectErrorSatisfies(throwable -> {
@@ -57,6 +71,9 @@ public class UserUseCaseTest {
     @Test
     @DisplayName(value = "Should Throw Exception UsernameIsNotAvailableDomainException when try to persist another record with the same username")
     void shouldThrowExceptionWhenUsernameIsNotAvailable () {
+        when(encodeProvider.encode(anyString()))
+                .thenReturn(EXAMPLE_ENCODE_PASS);
+
         when(userRepository.existUsername("doe@gmail.com"))
                 .thenReturn(Mono.just(Boolean.TRUE));
 
@@ -65,7 +82,7 @@ public class UserUseCaseTest {
         StepVerifier.create(userUseCase.createUser(cmd))
                 .expectErrorSatisfies(throwable -> {
                     assertEquals("Username doe@gmail.com is not available", throwable.getMessage());
-                    assertInstanceOf(UsernameIsNotAvailableDomainException.class, throwable);
+                    assertInstanceOf(UsernameIsNotAllowedDomainException.class, throwable);
                 }).verify();
 
         verify(userRepository, Mockito.times(1)).existUsername(anyString());
@@ -74,6 +91,9 @@ public class UserUseCaseTest {
 
     @Test
     void shouldThrowExceptionWhenDBIsNotWorking () {
+        when(encodeProvider.encode(anyString()))
+                .thenReturn(EXAMPLE_ENCODE_PASS);
+
         when(userRepository.existUsername("doe@gmail.com"))
                 .thenReturn(Mono.just(Boolean.FALSE));
 
@@ -95,6 +115,9 @@ public class UserUseCaseTest {
     @Test
     void shouldBePersistedUserWithSuccessful () {
         User expected = User.createUser("doe@gmail.com", "xxx");
+
+        when(encodeProvider.encode(anyString()))
+                .thenReturn(EXAMPLE_ENCODE_PASS);
 
         when(userRepository.existUsername("doe@gmail.com"))
                 .thenReturn(Mono.just(Boolean.FALSE));

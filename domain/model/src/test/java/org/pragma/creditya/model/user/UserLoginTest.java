@@ -16,7 +16,7 @@ public class UserLoginTest {
                     .lock(Boolean.TRUE)
                     .build();
 
-            user.checkLogin();
+            user.checkIsLocked();
         });
 
         assertEquals("User doe@gmail.com is Locked, invalid any operation until new order", exception.getMessage());
@@ -24,22 +24,19 @@ public class UserLoginTest {
 
 
     @Test
-    void shouldThrowException_UserDoesNotHaveOtherRetry () {
-        UserLockedDomainException exception = assertThrows(UserLockedDomainException.class, () -> {
-            User user = User.Builder.anUser()
-                    .userName("doe@gmail.com")
-                    .password("123")
-                    .lock(Boolean.FALSE)
-                    .retry(0)
-                    .build();
+    void shouldBeFalse_WhenUserShouldBeBlocked () {
+        User user = User.Builder.anUser()
+                .userName("doe@gmail.com")
+                .password("123")
+                .lock(Boolean.FALSE)
+                .retry(0)
+                .build();
 
-            user.checkLogin();
-        });
 
-        assertEquals("User doe@gmail.com is Locked, invalid any operation until new order", exception.getMessage());
+        assertTrue(user.shouldBeBlocked());
     }
 
-    private User test_takeThreeRetries () {
+    private User test_userHadFailedTwice () {
         User user = User.Builder.anUser()
                 .userName("doe@gmail.com")
                 .password("123")
@@ -47,41 +44,37 @@ public class UserLoginTest {
                 .retry(User.DEFAULT_THRESHOLD)
                 .build();
 
-        // Try Login once
-        user.checkLogin();
+        // User had failed once
+        user.loginFailed();
 
         assertEquals(2, user.getRetry().cant());
-        assertFalse(user.getLock().isLock());
+        assertDoesNotThrow(user::checkIsLocked);
+        assertFalse(user.shouldBeBlocked());
 
-        // Try Login second time
-        user.checkLogin();
+        // User had failed twice
+        user.loginFailed();
 
         assertEquals(1, user.getRetry().cant());
-        assertFalse(user.getLock().isLock());
-
-        // Try Login three time
-        user.checkLogin();
-
-        assertEquals(0, user.getRetry().cant());
-        assertFalse(user.getLock().isLock());
+        assertDoesNotThrow(user::checkIsLocked);
+        assertFalse(user.shouldBeBlocked());
 
         return user;
     }
 
     @Test
-    void shouldBeOK_whenTakeAnewRetry_forLoginUntilThreeTimes () {
-        test_takeThreeRetries();
+    void shouldBeAvailableUser_whenFailedLoginTwice () {
+        test_userHadFailedTwice();
     }
 
     @Test
-    void shouldBeThrowException_whenRunOutRetry () {
-        User user = test_takeThreeRetries();
+    void shouldBeBlocked_WhenUserHadFailedThreeTimes () {
+        User user = test_userHadFailedTwice();
 
-        // Run out
-        UserLockedDomainException exception = assertThrows(UserLockedDomainException.class, user::checkLogin);
-        assertEquals("User doe@gmail.com is Locked, invalid any operation until new order", exception.getMessage());
+        user.loginFailed();
+
+        assertEquals(0, user.getRetry().cant());
+        assertDoesNotThrow(user::checkIsLocked);
+        assertTrue(user.shouldBeBlocked());
     }
-
-
 
 }

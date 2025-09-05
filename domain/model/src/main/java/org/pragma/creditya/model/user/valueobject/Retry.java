@@ -22,4 +22,8 @@ public record Retry(Integer cant) {
     public Retry reset(Integer cant) {
         return new Retry(cant);
     }
+
+    public Boolean hasAnotherRetry () {
+        return cant > 0;
+    }
 }

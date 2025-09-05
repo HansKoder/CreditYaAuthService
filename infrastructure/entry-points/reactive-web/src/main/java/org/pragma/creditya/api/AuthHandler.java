@@ -2,8 +2,11 @@ package org.pragma.creditya.api;
 
 import lombok.RequiredArgsConstructor;
 import org.pragma.creditya.api.dto.request.CreateUserRequest;
+import org.pragma.creditya.api.dto.request.LoginRequest;
 import org.pragma.creditya.api.mapper.UserRestMapper;
 import org.pragma.creditya.usecase.user.ports.in.IUserUseCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -16,11 +19,19 @@ public class AuthHandler {
 
     private final IUserUseCase userUseCase;
 
+    private final Logger logger = LoggerFactory.getLogger(AuthHandler.class);
+
     public Mono<ServerResponse> createUser(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(CreateUserRequest.class)
                 .map(UserRestMapper::toCommand)
                 .flatMap(userUseCase::createUser)
                 .map(UserRestMapper::toResponse)
+                .flatMap(response -> ServerResponse.status(HttpStatus.CREATED).bodyValue(response));
+    }
+
+    public Mono<ServerResponse> login(ServerRequest serverRequest) {
+        return serverRequest.bodyToMono(LoginRequest.class)
+                .doOnSuccess(res -> logger.info("this is process of request login.."))
                 .flatMap(response -> ServerResponse.status(HttpStatus.CREATED).bodyValue(response));
     }
 
