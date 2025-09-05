@@ -21,6 +21,13 @@ public class JwtProvider {
     private String secret = "secret";
     private Integer expiration = 1;
 
+    // Usar una clave segura de al menos 32 bytes
+    private static final String SECRET_KEY = "SOCC3R_B3T_SUPER_SECRET_KEY_1234567890";
+
+    // Construir la clave de forma segura
+    public static final SecretKey KEY = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+
+
     public String generateToken(UserDetails userDetails) {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
@@ -28,7 +35,8 @@ public class JwtProvider {
                 .issuedAt(new Date())
                 .expiration(new Date(new Date().getTime() + expiration))
                 // .setExpiration(new Date(System.currentTimeMillis() + 3600_000))
-                .signWith(getKey(secret))
+                // .signWith(getKey(secret))
+                .signWith(KEY, Jwts.SIG.HS256)
                 .compact();
     }
 

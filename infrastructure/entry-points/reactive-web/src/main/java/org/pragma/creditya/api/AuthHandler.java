@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.pragma.creditya.api.dto.request.CreateUserRequest;
 import org.pragma.creditya.api.dto.request.LoginRequest;
 import org.pragma.creditya.api.mapper.UserRestMapper;
+import org.pragma.creditya.usecase.user.ports.in.ILoginUseCase;
 import org.pragma.creditya.usecase.user.ports.in.IUserUseCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -18,6 +20,7 @@ import reactor.core.publisher.Mono;
 public class AuthHandler {
 
     private final IUserUseCase userUseCase;
+    private final ILoginUseCase loginUseCase;
 
     private final Logger logger = LoggerFactory.getLogger(AuthHandler.class);
 
@@ -31,8 +34,11 @@ public class AuthHandler {
 
     public Mono<ServerResponse> login(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(LoginRequest.class)
-                .doOnSuccess(res -> logger.info("this is process of request login.."))
-                .flatMap(response -> ServerResponse.status(HttpStatus.CREATED).bodyValue(response));
+                .map(UserRestMapper::toCommand)
+                .flatMap(loginUseCase::handler)
+                .flatMap(token -> ServerResponse.status(HttpStatus.OK).header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .build())
+                .doOnSuccess(e -> logger.info("[infra.reactive-web] (login) was successful"));
     }
 
 }

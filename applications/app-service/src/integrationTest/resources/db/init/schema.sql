@@ -1,8 +1,11 @@
-CREATE TABLE users (
-    user_id UUID PRIMARY KEY,
-    username VARCHAR(100) UNIQUE,
-    password VARCHAR(100) NOT NULL
-);
 
-ALTER TABLE public.users
-    ALTER COLUMN user_id SET DEFAULT gen_random_uuid();
+
+CREATE TABLE public.users (
+	username varchar(100) NOT NULL,
+	"password" varchar(100) NOT NULL,
+	user_id uuid DEFAULT gen_random_uuid() NOT NULL,
+	"lock" bool DEFAULT false NULL,
+	retry int4 NULL,
+	CONSTRAINT username UNIQUE (username),
+	CONSTRAINT users_pkey PRIMARY KEY (user_id)
+);

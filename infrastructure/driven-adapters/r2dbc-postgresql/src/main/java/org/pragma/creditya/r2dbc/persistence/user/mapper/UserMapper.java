@@ -9,13 +9,14 @@ import org.springframework.stereotype.Component;
 public class UserMapper implements CustomMapper<User, UserEntity> {
     @Override
     public UserEntity toData(User entity) {
-
-        UserEntity data = new UserEntity();
+        UserEntity data = UserEntity.builder()
+                .username(entity.getUserName().getValue())
+                .password(entity.getPassword().value())
+                .lock(entity.getLock().isLock())
+                .retry(entity.getRetry().cant())
+                .build();
 
         if (entity.getId() != null) data.setUserId(entity.getId().getValue());
-
-        data.setUsername(entity.getUserName().getValue());
-        data.setPassword(entity.getPassword().value());
 
         return data;
     }
@@ -27,6 +28,8 @@ public class UserMapper implements CustomMapper<User, UserEntity> {
                 .id(data.getUserId())
                 .userName(data.getUsername())
                 .password(data.getPassword())
+                .retry(data.getRetry())
+                .lock(data.getLock())
                 .build();
     }
 }

@@ -25,14 +25,16 @@ public class UserRepositoryAdapter extends ReactiveAdapterOperations<
 
     @Override
     public Mono<Boolean> existUsername(String username) {
-        UserEntity filter = new UserEntity();
-        filter.setUsername(username);
+        UserEntity filter = UserEntity.builder()
+                .username(username)
+                .build();
 
         return repository.exists(Example.of(filter));
     }
 
     @Override
     public Mono<User> findByUsername(String username) {
-        return null;
+        return repository.findByUsername(username)
+                .map(this::toEntity);
     }
 }

@@ -1,6 +1,5 @@
 package org.pragma.creditya.r2dbc.persistence.user.mapper;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.pragma.creditya.model.user.User;
@@ -18,10 +17,13 @@ public class UserMapperTest {
     void shouldBeMappedToEntity () {
         UUID userId = UUID.fromString("5b87a0d6-2fed-4db7-aa49-49663f719659");
 
-        UserEntity data = new UserEntity();
-        data.setUserId(userId);
-        data.setUsername("doe@gmail.com");
-        data.setPassword("1234");
+        UserEntity data = UserEntity.builder()
+                .userId(userId)
+                .username("doe@gmail.com")
+                .password("1234")
+                .lock(Boolean.FALSE)
+                .retry(3)
+                .build();
 
         User entity = userMapper.toEntity(data);
 
@@ -41,6 +43,8 @@ public class UserMapperTest {
                 .id(userId)
                 .userName("doe@gmail.com")
                 .password("1234")
+                .retry(3)
+                .lock(Boolean.FALSE)
                 .build();
 
         UserEntity data = userMapper.toData(entity);
@@ -56,6 +60,8 @@ public class UserMapperTest {
         User entity = User.Builder.anUser()
                 .userName("doe@gmail.com")
                 .password("1234")
+                .lock(Boolean.TRUE)
+                .retry(3)
                 .build();
 
         UserEntity data = userMapper.toData(entity);

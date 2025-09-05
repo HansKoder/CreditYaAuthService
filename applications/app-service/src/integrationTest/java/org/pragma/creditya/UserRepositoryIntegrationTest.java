@@ -69,7 +69,12 @@ public class UserRepositoryIntegrationTest {
 
     @Test
     void shouldBePersistedWithSuccessful() {
-        User entity = User.create("doe@gmail.com", "password");
+        User entity = User.Builder.anUser()
+                .userName("doe@gmail.com")
+                .password("password")
+                .lock(Boolean.TRUE)
+                .retry(3)
+                .build();
 
         StepVerifier.create(userRepository.save(entity))
                 .expectNextMatches(persisted -> !Objects.isNull(persisted)
@@ -82,7 +87,12 @@ public class UserRepositoryIntegrationTest {
 
     @Test
     void shouldBeFoundUserBeforeBeingPersisted() {
-        User entity = User.create("doe@gmail.com", "password");
+        User entity = User.Builder.anUser()
+                .userName("doe@gmail.com")
+                .password("password")
+                .lock(Boolean.TRUE)
+                .retry(3)
+                .build();
 
         StepVerifier.create(userRepository.save(entity))
                 .expectNextMatches(persisted -> !Objects.isNull(persisted)

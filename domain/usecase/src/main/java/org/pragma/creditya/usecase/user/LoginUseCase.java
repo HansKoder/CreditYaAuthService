@@ -70,7 +70,7 @@ public class LoginUseCase implements ILoginUseCase {
     }
 
     private Boolean isMatchPass (String passEncoded, String passInput) {
-        return encodeProvider.matches(passEncoded, encodeProvider.encode(passInput));
+        return encodeProvider.matches(passInput, passEncoded);
     }
 
     private Mono<User> checkPass (User u, String p) {

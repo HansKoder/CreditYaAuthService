@@ -1,11 +1,13 @@
 package org.pragma.creditya.api.config;
 
+import org.mockito.Mock;
 import org.pragma.creditya.api.AuthHandler;
 import org.pragma.creditya.api.AuthRouterRest;
 import org.junit.jupiter.api.Test;
 import org.pragma.creditya.api.dto.request.CreateUserRequest;
 import org.pragma.creditya.model.user.User;
 import org.pragma.creditya.usecase.user.command.CreateUserCommand;
+import org.pragma.creditya.usecase.user.ports.in.ILoginUseCase;
 import org.pragma.creditya.usecase.user.ports.in.IUserUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
@@ -32,6 +34,9 @@ class ConfigTest {
     @MockitoBean
     IUserUseCase userUseCase;
 
+    @MockitoBean
+    ILoginUseCase loginUseCase;
+
     @Test
     void corsConfigurationShouldAllowOrigins() {
         UUID userId = UUID.fromString("5b87a0d6-2fed-4db7-aa49-49663f719659");
@@ -40,13 +45,15 @@ class ConfigTest {
                 .id(userId)
                 .userName("doe@gmail.com")
                 .password("123")
+                .lock(false)
+                .retry(3)
                 .build();
 
         when(userUseCase.createUser(any(CreateUserCommand.class)))
                 .thenReturn(Mono.just(user));
 
         webTestClient.post()
-                .uri("/api/auth")
+                .uri("/api/v1/user")
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(new CreateUserRequest("doe@gmail.com", "123"))
                 .exchange()

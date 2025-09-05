@@ -2,6 +2,8 @@ package org.pragma.creditya.config;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.pragma.creditya.model.user.gateways.EncodeProvider;
+import org.pragma.creditya.model.user.gateways.TokenProvider;
 import org.pragma.creditya.model.user.gateways.UserRepository;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -38,9 +40,20 @@ public class UseCasesConfigTest {
         }
 
         @Bean
-        public UserRepository mockRepository () {
+        public UserRepository userRepoMock () {
             return Mockito.mock(UserRepository.class);
         }
+
+        @Bean
+        public TokenProvider tokenProviderMock () {
+            return Mockito.mock(TokenProvider.class);
+        }
+
+        @Bean
+        public EncodeProvider encodeProvider () {
+            return Mockito.mock(EncodeProvider.class);
+        }
+
     }
 
     static class MyUseCase {

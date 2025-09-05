@@ -7,6 +7,7 @@ import org.pragma.creditya.api.dto.response.GetUserResponse;
 import org.pragma.creditya.model.user.User;
 import org.pragma.creditya.model.user.exception.UserDomainException;
 import org.pragma.creditya.usecase.user.command.CreateUserCommand;
+import org.pragma.creditya.usecase.user.ports.in.ILoginUseCase;
 import org.pragma.creditya.usecase.user.ports.in.IUserUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
@@ -34,6 +35,11 @@ class RouterRestTest {
     @MockitoBean
     IUserUseCase userUseCase;
 
+    @MockitoBean
+    ILoginUseCase loginUseCase;
+    
+    private final String API_USER = "/api/v1/user";
+
     @Test
     void shouldCreateUserWithSuccessful() {
         UUID userId = UUID.fromString("5b87a0d6-2fed-4db7-aa49-49663f719659");
@@ -48,7 +54,7 @@ class RouterRestTest {
                         .thenReturn(Mono.just(user));
 
         webTestClient.post()
-                .uri("/api/auth")
+                .uri(API_USER)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(new CreateUserRequest("doe@gmail.com", "123"))
                 .exchange()
@@ -66,7 +72,7 @@ class RouterRestTest {
                         .thenReturn(Mono.error(new UserDomainException("Username must be mandatory")));
 
         webTestClient.post()
-                .uri("/api/auth")
+                .uri(API_USER)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(new CreateUserRequest(" ", "123"))
                 .exchange()
@@ -86,7 +92,7 @@ class RouterRestTest {
                         .thenReturn(Mono.error(new SQLException("Bad SQL")));
 
         webTestClient.post()
-                .uri("/api/auth")
+                .uri(API_USER)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(new CreateUserRequest("doe@gmail.com", "123"))
                 .exchange()
@@ -106,7 +112,7 @@ class RouterRestTest {
                         .thenReturn(Mono.error(new RuntimeException("DB is not working")));
 
         webTestClient.post()
-                .uri("/api/auth")
+                .uri(API_USER)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(new CreateUserRequest("doe@gmail.com", "123"))
                 .exchange()

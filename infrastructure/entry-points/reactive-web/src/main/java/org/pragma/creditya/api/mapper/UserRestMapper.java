@@ -1,9 +1,11 @@
 package org.pragma.creditya.api.mapper;
 
 import org.pragma.creditya.api.dto.request.CreateUserRequest;
+import org.pragma.creditya.api.dto.request.LoginRequest;
 import org.pragma.creditya.api.dto.response.GetUserResponse;
 import org.pragma.creditya.model.user.User;
 import org.pragma.creditya.usecase.user.command.CreateUserCommand;
+import org.pragma.creditya.usecase.user.command.LoginCommand;
 
 public class UserRestMapper {
 
@@ -20,6 +22,10 @@ public class UserRestMapper {
           user.getId().getValue().toString(),
           user.getUserName().getValue()
         );
+    }
+
+    public static LoginCommand toCommand (LoginRequest request) {
+        return new LoginCommand(request.username(), request.password());
     }
 
 }
