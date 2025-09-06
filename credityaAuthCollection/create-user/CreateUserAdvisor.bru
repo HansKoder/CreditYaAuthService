@@ -1,0 +1,23 @@
+meta {
+  name: CreateUserAdvisor
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:9080/api/v1/user
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBjcmVkaXQuY29tIiwicm9sZXMiOlt7ImF1dGhvcml0eSI6IkFETUlOIn1dLCJpYXQiOjE3NTcxOTQxNTEsImV4cCI6MTc1NzE5Nzc1MX0.Ke4gObmSNvKuqKRf70HkHKY67spNwrjiFFkerTzN6YE
+}
+
+body:json {
+  {
+    "username": "advisor@credit.com",
+    "password": "123",
+    "roleId": 2
+  }
+}

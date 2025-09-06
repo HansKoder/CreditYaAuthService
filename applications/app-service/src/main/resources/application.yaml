@@ -44,3 +44,7 @@ adapters:
 
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
+
+jwt:
+  secret: ${SECRET_KEY:uO8lC2VhP3nZ6kF9Q1tWjR7yX5aT2sVb0mGhN8oJzK4cE6rLwBqD3pUyHfMxZaSd}
+  expiration: "${EXPIRATION:3600000}"

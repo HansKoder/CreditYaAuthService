@@ -5,9 +5,6 @@ import org.pragma.creditya.usecase.user.command.CreateUserCommand;
 import reactor.core.publisher.Mono;
 
 public interface IUserUseCase {
-
-    // Mono<User> createUser (CreateUserCommand command);
-
     Mono<User> checkUsernameIsAvailable (User user);
     Mono<User> checkInitializationUer (CreateUserCommand command);
     Mono<User> persist (User user);

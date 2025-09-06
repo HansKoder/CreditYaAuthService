@@ -15,16 +15,6 @@ public class UserUseCase implements IUserUseCase {
     private final UserRepository userRepository;
     private final EncodeProvider encodeProvider;
 
-    // ignore for now, this need to be removed this method.
-    /*
-    @Override
-    public Mono<User> createUser(CreateUserCommand command) {
-        return Mono.fromCallable(() -> checkUser(command))
-                .flatMap(this::checkUsernameIsAvailable)
-                .flatMap(userRepository::save);
-    }
-     */
-
     @Override
     public Mono<User> checkUsernameIsAvailable (User user) {
         return userRepository.existUsername(user.getUserName().getValue())

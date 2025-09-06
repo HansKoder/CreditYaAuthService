@@ -1,6 +1,7 @@
 package org.pragma.creditya.security.jwt.manager;
 
 
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.pragma.creditya.security.jwt.provider.JwtProvider;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
@@ -24,19 +25,20 @@ public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
     public Mono<Authentication> authenticate(Authentication authentication) {
         return Mono.just(authentication)
                 .map(auth -> jwtProvider.getClaims(auth.getCredentials().toString()))
-                .log()
                 // .onErrorResume(e -> Mono.error(new Throwable("bad token")))
-                .map(claims -> new UsernamePasswordAuthenticationToken(
-                        claims.getSubject(),
-                        null,
-                        Stream.of(claims.get("roles"))
-                                .map(role -> (List<Map<String, String>>) role)
-                                .flatMap(role -> role.stream()
-                                        .map(r -> r.get("authority"))
-                                        .map(SimpleGrantedAuthority::new))
-                                .toList())
-                );
+                .map(this::setupToken);
     }
 
+    private UsernamePasswordAuthenticationToken setupToken (Claims claims) {
+        return new UsernamePasswordAuthenticationToken(
+                claims.getSubject(),
+                null,
+                Stream.of(claims.get("roles"))
+                        .map(role -> (List<Map<String, String>>) role)
+                        .flatMap(role -> role.stream()
+                                .map(r -> r.get("authority"))
+                                .map(SimpleGrantedAuthority::new))
+                        .toList());
+    }
 
 }

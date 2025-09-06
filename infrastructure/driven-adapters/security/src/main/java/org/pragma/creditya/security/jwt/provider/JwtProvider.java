@@ -3,12 +3,16 @@ package org.pragma.creditya.security.jwt.provider;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import org.pragma.creditya.security.exception.SecurityInfraException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 @Component
@@ -16,16 +20,25 @@ public class JwtProvider {
 
     private static final Logger LOGGER =  Logger.getLogger(JwtProvider.class.getName());
 
-    private static final long EXPIRATION = 3600000;
+    @Value("${jwt.secret}")
+    private String SECRET_KEY;
+    @Value("${jwt.expiration}")
+    private Integer EXPIRATION;
 
+    private SecretKey KEY;
 
-    private static final String SECRET_KEY =
-            "uO8lC2VhP3nZ6kF9Q1tWjR7yX5aT2sVb0mGhN8oJzK4cE6rLwBqD3pUyHfMxZaSd";
+    @PostConstruct
+    private void init () {
+        LOGGER.info("INIT KEY.. ");
+        if (SECRET_KEY == null) return;
 
-    private static final SecretKey KEY =
-            Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+        this.KEY = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+    }
 
     public String generateToken(UserDetails userDetails) {
+        if (Objects.isNull(userDetails))
+            throw new SecurityInfraException("[infra.security] user detail is mandatory");
+
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .claim("roles", userDetails.getAuthorities())
@@ -51,7 +64,7 @@ public class JwtProvider {
                     .parseSignedClaims(token);
             return true;
         } catch (JwtException e) {
-            LOGGER.severe("Token inválido: " + e.getMessage());
+            LOGGER.severe("Invalid Token: " + e.getMessage());
             return false;
         }
     }
