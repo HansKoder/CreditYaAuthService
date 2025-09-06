@@ -7,25 +7,17 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.UUID;
 
-@Table(name = "users", schema = "public")
+@Table(name = "roles", schema = "public")
 @Getter
 @Setter
 @ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserEntity {
+public class RoleEntity {
 
     @Id
-    @Column("user_id")
-    private UUID userId;
-
     @Column("role_id")
     private Long roleId;
-
-    private String username;
-    private String password;
-
-    private Boolean lock;
-    private Integer retry;
+    private String name;
 }

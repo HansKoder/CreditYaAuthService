@@ -5,7 +5,7 @@ import org.pragma.creditya.usecase.user.command.CreateUserCommand;
 import org.pragma.creditya.usecase.user.command.LoginCommand;
 import reactor.core.publisher.Mono;
 
-public interface IAuthApplicationService {
+public interface IAuthApplicationUseCase {
 
      Mono<User> createUser(CreateUserCommand command);
 

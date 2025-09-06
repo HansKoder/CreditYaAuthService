@@ -20,6 +20,9 @@ public class UserEntity {
     @Column("user_id")
     private UUID userId;
 
+    @Column("role_id")
+    private Long roleId;
+
     private String username;
     private String password;
 

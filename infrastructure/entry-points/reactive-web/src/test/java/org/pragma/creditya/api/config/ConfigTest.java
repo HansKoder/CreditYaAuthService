@@ -1,15 +1,12 @@
 package org.pragma.creditya.api.config;
 
-import org.mockito.Mock;
 import org.pragma.creditya.api.AuthHandler;
 import org.pragma.creditya.api.AuthRouterRest;
 import org.junit.jupiter.api.Test;
 import org.pragma.creditya.api.dto.request.CreateUserRequest;
 import org.pragma.creditya.model.user.User;
-import org.pragma.creditya.usecase.IAuthApplicationService;
+import org.pragma.creditya.usecase.IAuthApplicationUseCase;
 import org.pragma.creditya.usecase.user.command.CreateUserCommand;
-import org.pragma.creditya.usecase.user.ports.in.ILoginUseCase;
-import org.pragma.creditya.usecase.user.ports.in.IUserUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.context.annotation.Import;
@@ -33,7 +30,7 @@ class ConfigTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    IAuthApplicationService authApplicationService;
+    IAuthApplicationUseCase authApplicationService;
 
     @Test
     void corsConfigurationShouldAllowOrigins() {
@@ -52,7 +49,7 @@ class ConfigTest {
         webTestClient.post()
                 .uri("/api/v1/user")
                 .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(new CreateUserRequest("doe@gmail.com", "123"))
+                .bodyValue(new CreateUserRequest("doe@gmail.com", "123", 1L))
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().valueEquals("Content-Security-Policy",

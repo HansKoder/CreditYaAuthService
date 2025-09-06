@@ -7,17 +7,17 @@ meta {
 post {
   url: http://localhost:9080/api/v1/user
   body: json
-  auth: basic
+  auth: bearer
 }
 
-auth:basic {
-  username: user
-  password: 1f58e49d-da4a-4085-a5d3-cc0b2b1526ee
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjdXN0b21lckBjcmVkaXQuY29tIiwicm9sZXMiOlt7ImF1dGhvcml0eSI6IkFETUlOIn1dLCJpYXQiOjE3NTcxNDY1NzcsImV4cCI6MTc1NzE1MDE3N30.eGFaBuJTf2xhB-84kKq_ot-en9nlv9pX1qbDLv8EOvE
 }
 
 body:json {
   {
-    "username": "doe@gmail.com",
-    "password": "password"
+    "username": "customer2@credit.com",
+    "password": "customer123",
+    "roleId": 3
   }
 }

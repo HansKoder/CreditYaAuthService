@@ -4,6 +4,7 @@ import org.junit.jupiter.api.*;
 import org.pragma.creditya.model.user.User;
 import org.pragma.creditya.model.user.gateways.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -74,6 +75,7 @@ public class UserRepositoryIntegrationTest {
                 .password("password")
                 .lock(Boolean.TRUE)
                 .retry(3)
+                .roleId(1L)
                 .build();
 
         StepVerifier.create(userRepository.save(entity))
@@ -92,6 +94,7 @@ public class UserRepositoryIntegrationTest {
                 .password("password")
                 .lock(Boolean.TRUE)
                 .retry(3)
+                .roleId(1L)
                 .build();
 
         StepVerifier.create(userRepository.save(entity))

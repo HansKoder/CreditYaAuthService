@@ -1,35 +1,26 @@
 package org.pragma.creditya.r2dbc.persistence.role.mapper;
 
-import org.pragma.creditya.model.user.User;
+import org.pragma.creditya.model.role.Role;
 import org.pragma.creditya.r2dbc.helper.CustomMapper;
-import org.pragma.creditya.r2dbc.persistence.role.entity.UserEntity;
+import org.pragma.creditya.r2dbc.persistence.role.entity.RoleEntity;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserMapper implements CustomMapper<User, UserEntity> {
+public class RoleMapper implements CustomMapper<Role, RoleEntity> {
+
     @Override
-    public UserEntity toData(User entity) {
-        UserEntity data = UserEntity.builder()
-                .username(entity.getUserName().getValue())
-                .password(entity.getPassword().value())
-                .lock(entity.getLock().isLock())
-                .retry(entity.getRetry().cant())
+    public RoleEntity toData(Role entity) {
+        return RoleEntity.builder()
+                .roleId(entity.getId().id())
+                .name(entity.getName().name())
                 .build();
-
-        if (entity.getId() != null) data.setUserId(entity.getId().getValue());
-
-        return data;
     }
 
     @Override
-    public User toEntity(UserEntity data) {
-        // return User.rebuild(data.getUserId(), data.getUsername(), data.getPassword());
-        return User.Builder.anUser()
-                .id(data.getUserId())
-                .userName(data.getUsername())
-                .password(data.getPassword())
-                .retry(data.getRetry())
-                .lock(data.getLock())
+    public Role toEntity(RoleEntity data) {
+        return Role.RoleBuilder.aRole()
+                .id(data.getRoleId())
+                .name(data.getName())
                 .build();
     }
 }

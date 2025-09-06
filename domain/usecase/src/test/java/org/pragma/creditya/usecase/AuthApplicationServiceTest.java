@@ -27,7 +27,7 @@ public class AuthApplicationServiceTest {
     private ILoginUseCase loginUseCase;
 
     @InjectMocks
-    private AuthApplicationService authApplicationService;
+    private AuthApplicationUseCase authApplicationService;
 
     private final String EXAMPLE_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30";
 
@@ -49,7 +49,7 @@ public class AuthApplicationServiceTest {
         roleUseCase = Mockito.mock(IRoleUseCase.class);
         loginUseCase = Mockito.mock(ILoginUseCase.class);
 
-        authApplicationService = new AuthApplicationService(userUseCase, roleUseCase, loginUseCase);
+        authApplicationService = new AuthApplicationUseCase(userUseCase, roleUseCase, loginUseCase);
     }
 
     @Test

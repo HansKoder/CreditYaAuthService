@@ -16,18 +16,19 @@ public class UserRestMapperTest {
 
     @Test
     void shouldMapToCommandWithSuccessful () {
-        CreateUserRequest request = new CreateUserRequest("username", "password");
+        CreateUserRequest request = new CreateUserRequest("username", "password", 1L);
         CreateUserCommand cmd = UserRestMapper.toCommand(request);
 
         assertNotNull(cmd);
         assertEquals("username", cmd.username());
         assertEquals("password", cmd.password());
+        assertEquals(1L, cmd.roleId());
     }
 
     @Test
     void shouldMapToResponse () {
         UUID userId = UUID.fromString("5b87a0d6-2fed-4db7-aa49-49663f719659");
-        // User entity = User.rebuild(userId, "doe@gmail.com", "password");
+
         User entity = User.Builder.anUser()
                 .id(userId)
                 .userName("doe@gmail.com")

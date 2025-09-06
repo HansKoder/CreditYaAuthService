@@ -14,7 +14,7 @@ public class UserRestMapper {
     }
 
     public static CreateUserCommand toCommand (CreateUserRequest request) {
-        return new CreateUserCommand(request.username(), request.password());
+        return new CreateUserCommand(request.username(), request.password(), request.roleId());
     }
 
     public static GetUserResponse toResponse (User user) {

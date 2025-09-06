@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.pragma.creditya.api.dto.request.CreateUserRequest;
 import org.pragma.creditya.api.dto.request.LoginRequest;
 import org.pragma.creditya.api.mapper.UserRestMapper;
-import org.pragma.creditya.usecase.IAuthApplicationService;
-import org.pragma.creditya.usecase.user.ports.in.ILoginUseCase;
-import org.pragma.creditya.usecase.user.ports.in.IUserUseCase;
+import org.pragma.creditya.usecase.IAuthApplicationUseCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -20,7 +18,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class AuthHandler {
 
-    private final IAuthApplicationService authApplicationService;
+    private final IAuthApplicationUseCase authApplicationService;
 
     private final Logger logger = LoggerFactory.getLogger(AuthHandler.class);
 

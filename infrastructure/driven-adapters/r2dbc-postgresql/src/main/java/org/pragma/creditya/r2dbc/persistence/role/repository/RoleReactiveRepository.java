@@ -8,6 +8,5 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 // TODO: This file is just an example, you should delete or modify it
-public interface UserReactiveRepository extends ReactiveCrudRepository<RoleEntity, UUID>, ReactiveQueryByExampleExecutor<RoleEntity> {
-    Mono<RoleEntity> findByUsername(String username);
+public interface RoleReactiveRepository extends ReactiveCrudRepository<RoleEntity, Long>, ReactiveQueryByExampleExecutor<RoleEntity> {
 }

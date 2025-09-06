@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
 @RequiredArgsConstructor
-public class AuthApplicationService implements IAuthApplicationService{
+public class AuthApplicationUseCase implements IAuthApplicationUseCase {
 
     private final IUserUseCase userUseCase;
     private final IRoleUseCase roleUseCase;
