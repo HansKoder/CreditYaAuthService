@@ -32,7 +32,10 @@ public class UserUseCaseTest {
     @Mock
     private EncodeProvider encodeProvider;
 
-    private final String EXAMPLE_ENCODE_PASS = "$2y$10$X0Ix./OAjN8.RgkolvdYzOmSBGuTFIsKfu6BmYFBPVMgdcNyD2sxK";
+    private final User USER_EXAMPLE = User.Builder.anUser()
+            .userName("doe@gmail.com")
+            .password("xxx")
+            .build();
 
     @BeforeEach
     void setup () {
@@ -47,12 +50,14 @@ public class UserUseCaseTest {
         when(encodeProvider.encode(anyString()))
                 .thenReturn("");
 
-        CreateUserCommand cmd = new CreateUserCommand(null, "123456");
-        StepVerifier.create(userUseCase.createUser(cmd))
+        CreateUserCommand cmd = new CreateUserCommand(null, "123456", null);
+        StepVerifier.create(userUseCase.checkInitializationUer(cmd))
                 .expectErrorSatisfies(throwable -> {
                     assertEquals("Username must be mandatory", throwable.getMessage());
                     assertInstanceOf(UserDomainException.class, throwable);
                 }).verify();
+
+        verify(encodeProvider, Mockito.times(1)).encode(anyString());
     }
 
     @Test
@@ -60,8 +65,8 @@ public class UserUseCaseTest {
         when(encodeProvider.encode(anyString()))
                 .thenReturn("");
 
-        CreateUserCommand cmd = new CreateUserCommand("doe@gmail.com", " ");
-        StepVerifier.create(userUseCase.createUser(cmd))
+        CreateUserCommand cmd = new CreateUserCommand("doe@gmail.com", " ", null);
+        StepVerifier.create(userUseCase.checkInitializationUer(cmd))
                 .expectErrorSatisfies(throwable -> {
                     assertEquals("Password must be mandatory", throwable.getMessage());
                     assertInstanceOf(UserDomainException.class, throwable);
@@ -69,69 +74,75 @@ public class UserUseCaseTest {
     }
 
     @Test
+    void shouldBeInitializedWithSuccess_BecauseUserCredentialsAreValid () {
+        when(encodeProvider.encode(anyString()))
+                .thenReturn("****");
+
+        CreateUserCommand cmd = new CreateUserCommand("doe@gmail.com", "123", null);
+        var response = userUseCase.checkInitializationUer(cmd);
+
+        StepVerifier.create(response)
+                .expectNextMatches(user -> user.getPassword().value().equals("****")
+                ).verifyComplete();
+    }
+
+    @Test
     @DisplayName(value = "Should Throw Exception UsernameIsNotAvailableDomainException when try to persist another record with the same username")
     void shouldThrowExceptionWhenUsernameIsNotAvailable () {
-        when(encodeProvider.encode(anyString()))
-                .thenReturn(EXAMPLE_ENCODE_PASS);
-
         when(userRepository.existUsername("doe@gmail.com"))
                 .thenReturn(Mono.just(Boolean.TRUE));
 
-        CreateUserCommand cmd = new CreateUserCommand("doe@gmail.com", "xxx");
-
-        StepVerifier.create(userUseCase.createUser(cmd))
+        StepVerifier.create(userUseCase.checkUsernameIsAvailable(USER_EXAMPLE))
                 .expectErrorSatisfies(throwable -> {
                     assertEquals("Username doe@gmail.com is not available", throwable.getMessage());
                     assertInstanceOf(UsernameIsNotAllowedDomainException.class, throwable);
                 }).verify();
 
         verify(userRepository, Mockito.times(1)).existUsername(anyString());
-        verify(userRepository, never()).save(any(User.class));
     }
 
     @Test
-    void shouldThrowExceptionWhenDBIsNotWorking () {
-        when(encodeProvider.encode(anyString()))
-                .thenReturn(EXAMPLE_ENCODE_PASS);
-
+    @DisplayName(value = "Should be unique username, then is enabled to be used")
+    void shouldBeUniqueUsername () {
         when(userRepository.existUsername("doe@gmail.com"))
                 .thenReturn(Mono.just(Boolean.FALSE));
 
+        var response = userUseCase.checkUsernameIsAvailable(USER_EXAMPLE);
+        StepVerifier.create(response)
+                .expectNextMatches(
+                        u -> u.getUserName().getValue().equals("doe@gmail.com")
+                ).verifyComplete();
+
+
+        verify(userRepository, Mockito.times(1)).existUsername(anyString());
+    }
+
+
+    @Test
+    void shouldThrowExceptionWhenDBIsNotWorking () {
         when(userRepository.save(any(User.class)))
                 .thenReturn(Mono.error(new RuntimeException("DB is not working")));
 
-        CreateUserCommand cmd = new CreateUserCommand("doe@gmail.com", "xxx");
-
-        StepVerifier.create(userUseCase.createUser(cmd))
+        StepVerifier.create(userUseCase.persist(USER_EXAMPLE))
                 .expectErrorSatisfies(throwable -> {
                     assertEquals("DB is not working", throwable.getMessage());
                     assertInstanceOf(Exception.class, throwable);
                 }).verify();
 
-        verify(userRepository, Mockito.times(1)).existUsername("doe@gmail.com");
         verify(userRepository, Mockito.times(1)).save(any(User.class));
     }
 
+
     @Test
     void shouldBePersistedUserWithSuccessful () {
-        User expected = User.createUser("doe@gmail.com", "xxx");
+        when(userRepository.save(USER_EXAMPLE))
+                .thenReturn(Mono.just(USER_EXAMPLE));
 
-        when(encodeProvider.encode(anyString()))
-                .thenReturn(EXAMPLE_ENCODE_PASS);
-
-        when(userRepository.existUsername("doe@gmail.com"))
-                .thenReturn(Mono.just(Boolean.FALSE));
-
-        when(userRepository.save(expected))
-                .thenReturn(Mono.just(expected));
-
-        CreateUserCommand cmd = new CreateUserCommand("doe@gmail.com", "xxx");
-
-        StepVerifier.create(userUseCase.createUser(cmd))
-                .expectNext(expected)
+        var resp = userUseCase.persist(USER_EXAMPLE);
+        StepVerifier.create(resp)
+                .expectNext(USER_EXAMPLE)
                 .verifyComplete();
 
-        verify(userRepository, Mockito.times(1)).existUsername(anyString());
         verify(userRepository, Mockito.times(1)).save(any(User.class));
     }
 

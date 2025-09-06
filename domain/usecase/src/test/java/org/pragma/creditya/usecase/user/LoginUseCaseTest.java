@@ -210,11 +210,14 @@ public class LoginUseCaseTest {
         Mockito.when(encodeProvider.encode("123"))
                 .thenReturn(EXAMPLE_ENCODE_PASS);
 
-        Mockito.when(encodeProvider.matches("123", EXAMPLE_ENCODE_PASS))
+        Mockito.when(encodeProvider.matches("123", "123"))
                 .thenReturn(Boolean.TRUE);
 
         Mockito.when(tokenProvider.generateToken(USER))
                 .thenReturn(Mono.just(EXAMPLE_JWT));
+
+        Mockito.when(userRepository.save(USER))
+                .thenReturn(Mono.just(USER));
 
         var response = useCase.handler(new LoginCommand("user@gmail.com", "123"));
 

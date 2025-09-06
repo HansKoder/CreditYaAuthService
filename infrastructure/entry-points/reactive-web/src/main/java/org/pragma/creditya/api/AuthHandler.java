@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.pragma.creditya.api.dto.request.CreateUserRequest;
 import org.pragma.creditya.api.dto.request.LoginRequest;
 import org.pragma.creditya.api.mapper.UserRestMapper;
+import org.pragma.creditya.usecase.IAuthApplicationService;
 import org.pragma.creditya.usecase.user.ports.in.ILoginUseCase;
 import org.pragma.creditya.usecase.user.ports.in.IUserUseCase;
 import org.slf4j.Logger;
@@ -19,15 +20,14 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class AuthHandler {
 
-    private final IUserUseCase userUseCase;
-    private final ILoginUseCase loginUseCase;
+    private final IAuthApplicationService authApplicationService;
 
     private final Logger logger = LoggerFactory.getLogger(AuthHandler.class);
 
     public Mono<ServerResponse> createUser(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(CreateUserRequest.class)
                 .map(UserRestMapper::toCommand)
-                .flatMap(userUseCase::createUser)
+                .flatMap(authApplicationService::createUser)
                 .map(UserRestMapper::toResponse)
                 .flatMap(response -> ServerResponse.status(HttpStatus.CREATED).bodyValue(response));
     }
@@ -35,7 +35,7 @@ public class AuthHandler {
     public Mono<ServerResponse> login(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(LoginRequest.class)
                 .map(UserRestMapper::toCommand)
-                .flatMap(loginUseCase::handler)
+                .flatMap(authApplicationService::login)
                 .flatMap(token -> ServerResponse.status(HttpStatus.OK).header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                         .build())
                 .doOnSuccess(e -> logger.info("[infra.reactive-web] (login) was successful"));

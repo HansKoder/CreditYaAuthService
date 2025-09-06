@@ -15,14 +15,18 @@ public class UserUseCase implements IUserUseCase {
     private final UserRepository userRepository;
     private final EncodeProvider encodeProvider;
 
+    // ignore for now, this need to be removed this method.
+    /*
     @Override
     public Mono<User> createUser(CreateUserCommand command) {
         return Mono.fromCallable(() -> checkUser(command))
                 .flatMap(this::checkUsernameIsAvailable)
                 .flatMap(userRepository::save);
     }
+     */
 
-    private Mono<User> checkUsernameIsAvailable (User user) {
+    @Override
+    public Mono<User> checkUsernameIsAvailable (User user) {
         return userRepository.existUsername(user.getUserName().getValue())
                 .flatMap(exist -> {
                     if (!exist) return Mono.just(user);
@@ -30,7 +34,16 @@ public class UserUseCase implements IUserUseCase {
                     String err = String.format("Username %s is not available", user.getUserName().getValue());
                     return Mono.error(new UsernameIsNotAllowedDomainException(err));
                 });
+    }
 
+    @Override
+    public Mono<User> checkInitializationUer(CreateUserCommand command) {
+        return Mono.fromCallable(() -> checkUser(command));
+    }
+
+    @Override
+    public Mono<User> persist(User user) {
+        return userRepository.save(user);
     }
 
     private User checkUser (CreateUserCommand command) {

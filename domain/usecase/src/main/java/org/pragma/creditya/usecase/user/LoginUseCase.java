@@ -29,6 +29,8 @@ public class LoginUseCase implements ILoginUseCase {
                 .flatMap(this::checkUserName)
                 .flatMap(this::checkShouldBeBlocked)
                 .flatMap(u -> checkPass(u, command.password()))
+                .map(this::authenticated)
+                .flatMap(userRepository::save)
                 .flatMap(tokenProvider::generateToken);
     }
 
@@ -84,5 +86,10 @@ public class LoginUseCase implements ILoginUseCase {
         return userRepository.save(u)
                 .flatMap(saved ->
                         Mono.error(ex));
+    }
+
+    private User authenticated (User user) {
+        user.authenticated();
+        return user;
     }
 }

@@ -2,6 +2,7 @@ package org.pragma.creditya.model.user;
 
 
 import lombok.Getter;
+import org.pragma.creditya.model.shared.model.valueobject.RoleId;
 import org.pragma.creditya.model.shared.model.entity.AggregateRoot;
 import org.pragma.creditya.model.user.exception.UserDomainException;
 import org.pragma.creditya.model.user.exception.UserLockedDomainException;
@@ -13,6 +14,7 @@ import java.util.UUID;
 public class User extends AggregateRoot<UserId> {
     private final UserName userName;
     private final Password password;
+    private RoleId roleId;
     private Retry retry;
     private Lock lock;
 
@@ -23,6 +25,7 @@ public class User extends AggregateRoot<UserId> {
         this.password = builder.password;
         this.retry = builder.retry;
         this.lock = builder.lock;
+        this.roleId = builder.roleId;
 
         this.setId(builder.id);
     }
@@ -67,8 +70,17 @@ public class User extends AggregateRoot<UserId> {
         return userName == null || userName.getValue() == null ? "anonymous" : userName.getValue();
     }
 
+    public void assignRole (RoleId roleId) {
+        if (this.roleId != null)
+            throw new UserDomainException("Role already was assigned");
 
+        this.roleId = roleId;
+    }
 
+    public void authenticated() {
+        retry = new Retry(DEFAULT_THRESHOLD);
+        lock = lock.disabled();
+    }
 
     // Custom Builder
     public static final class Builder {
@@ -77,6 +89,7 @@ public class User extends AggregateRoot<UserId> {
         private UserName userName;
         private Retry retry;
         private Lock lock;
+        private RoleId roleId;
 
         private Builder() {
         }
@@ -107,6 +120,12 @@ public class User extends AggregateRoot<UserId> {
 
         public Builder id(UUID id) {
             this.id = new UserId(id);
+            return this;
+        }
+
+        public Builder roleId(Long roleId) {
+
+            this.roleId = new RoleId(roleId);
             return this;
         }
 
