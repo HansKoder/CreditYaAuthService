@@ -17,17 +17,17 @@ This service is built following **Clean Architecture** principles to ensure test
 - **Java 21**
 - **Spring Boot 3.5**
 - **Spring WebFlux** (Reactive stack)
-- **Spring Security** (Reactive)
-- **JWT** (Generate Token)
+- **Spring Security** (Security authorities)
+- **JWT** (Validate Token)
 - **Gradle** (build tool)
-- **Docker** (containerization)
-- **cleanArchitectureVersion** (Clean Architecture Bancolombia's Open Source Tool) 
+- **Docker** (containers)
+- **cleanArchitectureVersion** (Clean Architecture Bancolombia's Open Source Tool) [Website, more information](https://bancolombia.github.io/scaffold-clean-architecture/docs/intro/)
 
 ---
 
 ## Architecture
 - **Domain Layer**: Business rules (entities, value objects, contracts)
-- **Application Layer**: Use cases (login, token validation, user management)
+- **Application Layer**: Use cases (loan, loan review)
 - **Infrastructure Layer**: 
   - **Driven Adapters**:
     - Spring Security configuration
