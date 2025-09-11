@@ -42,11 +42,21 @@ public class UserRepositoryAdapterTest {
 
     @Test
     void mustSaveValue() {
-        UserEntity persisted = new UserEntity();
-        persisted.setUsername("doe@gmail.com");
-        persisted.setPassword("123");
 
-        User expected = User.create("doe@gmail.com", "123");
+        UserEntity persisted = UserEntity.builder()
+                .username("doe@gmail.com")
+                .password("123")
+                .lock(Boolean.FALSE)
+                .retry(3)
+                .build();
+
+        // User expected = User.create("doe@gmail.com", "123");
+        User expected = User.Builder.anUser()
+                .userName("doe@gmail.com")
+                .password("123")
+                .lock(Boolean.FALSE)
+                .retry(3)
+                .build();
 
         when(repository.save(any())).thenReturn(Mono.just(persisted));
         when(mapper.toData(any())).thenReturn(persisted);
@@ -61,12 +71,20 @@ public class UserRepositoryAdapterTest {
     void mustFindValueById() {
         UUID userId = UUID.fromString("5b87a0d6-2fed-4db7-aa49-49663f719659");
 
-        UserEntity persisted = new UserEntity();
-        persisted.setUserId(userId);
-        persisted.setUsername("doe@gmail.com");
-        persisted.setPassword("123");
+        UserEntity persisted = UserEntity.builder()
+                .userId(userId)
+                .username("doe@gmail.com")
+                .password("123")
+                .lock(Boolean.FALSE)
+                .retry(3)
+                .build();
 
-        User expected = User.create("doe@gmail.com", "123");
+        // User expected = User.create("doe@gmail.com", "123");
+        User expected = User.Builder.anUser()
+                .userName("doe@gmail.com")
+                .password("123")
+                .build();
+
 
         when(repository.findById(userId)).thenReturn(Mono.just(persisted));
         when(mapper.toEntity(any())).thenReturn(expected);

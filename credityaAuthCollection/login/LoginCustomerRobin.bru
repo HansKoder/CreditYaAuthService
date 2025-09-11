@@ -1,0 +1,18 @@
+meta {
+  name: LoginCustomerRobin
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:9080/api/v1/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "robin@credit.com",
+    "password": "123"
+  }
+}

@@ -2,8 +2,8 @@ package org.pragma.creditya.model.user.exception;
 
 import org.pragma.creditya.model.shared.exception.DomainException;
 
-public class UsernameIsNotAvailableDomainException extends DomainException {
-    public UsernameIsNotAvailableDomainException(String message) {
+public class UserLockedDomainException extends DomainException {
+    public UserLockedDomainException(String message) {
         super(message);
     }
 }

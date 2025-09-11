@@ -4,6 +4,7 @@ import org.junit.jupiter.api.*;
 import org.pragma.creditya.model.user.User;
 import org.pragma.creditya.model.user.gateways.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -69,7 +70,13 @@ public class UserRepositoryIntegrationTest {
 
     @Test
     void shouldBePersistedWithSuccessful() {
-        User entity = User.create("doe@gmail.com", "password");
+        User entity = User.Builder.anUser()
+                .userName("doe@gmail.com")
+                .password("password")
+                .lock(Boolean.TRUE)
+                .retry(3)
+                .roleId(1L)
+                .build();
 
         StepVerifier.create(userRepository.save(entity))
                 .expectNextMatches(persisted -> !Objects.isNull(persisted)
@@ -82,7 +89,13 @@ public class UserRepositoryIntegrationTest {
 
     @Test
     void shouldBeFoundUserBeforeBeingPersisted() {
-        User entity = User.create("doe@gmail.com", "password");
+        User entity = User.Builder.anUser()
+                .userName("doe@gmail.com")
+                .password("password")
+                .lock(Boolean.TRUE)
+                .retry(3)
+                .roleId(1L)
+                .build();
 
         StepVerifier.create(userRepository.save(entity))
                 .expectNextMatches(persisted -> !Objects.isNull(persisted)

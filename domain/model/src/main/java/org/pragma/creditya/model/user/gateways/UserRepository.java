@@ -8,4 +8,5 @@ import java.util.UUID;
 public interface UserRepository {
     Mono<User> save(User domain);
     Mono<Boolean> existUsername (String username);
+    Mono<User> findByUsername (String username);
 }

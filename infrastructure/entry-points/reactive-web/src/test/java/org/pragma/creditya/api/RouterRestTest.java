@@ -6,8 +6,8 @@ import org.pragma.creditya.api.dto.response.ErrorResponse;
 import org.pragma.creditya.api.dto.response.GetUserResponse;
 import org.pragma.creditya.model.user.User;
 import org.pragma.creditya.model.user.exception.UserDomainException;
+import org.pragma.creditya.usecase.IAuthApplicationUseCase;
 import org.pragma.creditya.usecase.user.command.CreateUserCommand;
-import org.pragma.creditya.usecase.user.ports.in.IUserUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.http.MediaType;
@@ -32,20 +32,26 @@ class RouterRestTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    IUserUseCase userUseCase;
+    IAuthApplicationUseCase authApplicationService;
+    
+    private final String API_USER = "/api/v1/user";
 
     @Test
     void shouldCreateUserWithSuccessful() {
         UUID userId = UUID.fromString("5b87a0d6-2fed-4db7-aa49-49663f719659");
-        User user = User.rebuild(userId, "doe@gmail.com", "123");
+        User user = User.Builder.anUser()
+                .id(userId)
+                .userName("doe@gmail.com")
+                .password("123")
+                .build();
 
-        when(userUseCase.createUser(any(CreateUserCommand.class)))
+        when(authApplicationService.createUser(any(CreateUserCommand.class)))
                         .thenReturn(Mono.just(user));
 
         webTestClient.post()
-                .uri("/api/auth")
+                .uri(API_USER)
                 .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(new CreateUserRequest("doe@gmail.com", "123"))
+                .bodyValue(new CreateUserRequest("doe@gmail.com", "123", 1L))
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody(GetUserResponse.class)
@@ -57,13 +63,13 @@ class RouterRestTest {
 
     @Test
     void shouldThrowExceptionWhenUsernameIsEmpty() {
-        when(userUseCase.createUser(any(CreateUserCommand.class)))
+        when(authApplicationService.createUser(any(CreateUserCommand.class)))
                         .thenReturn(Mono.error(new UserDomainException("Username must be mandatory")));
 
         webTestClient.post()
-                .uri("/api/auth")
+                .uri(API_USER)
                 .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(new CreateUserRequest(" ", "123"))
+                .bodyValue(new CreateUserRequest(" ", "123", null))
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody(ErrorResponse.class)
@@ -77,13 +83,13 @@ class RouterRestTest {
 
     @Test
     void shouldThrowExceptionWhenSQLHasInvalidQuery() {
-        when(userUseCase.createUser(any(CreateUserCommand.class)))
+        when(authApplicationService.createUser(any(CreateUserCommand.class)))
                         .thenReturn(Mono.error(new SQLException("Bad SQL")));
 
         webTestClient.post()
-                .uri("/api/auth")
+                .uri(API_USER)
                 .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(new CreateUserRequest("doe@gmail.com", "123"))
+                .bodyValue(new CreateUserRequest("doe@gmail.com", "123", 1L))
                 .exchange()
                 .expectStatus().is5xxServerError()
                 .expectBody(ErrorResponse.class)
@@ -97,13 +103,13 @@ class RouterRestTest {
 
     @Test
     void shouldThrowExceptionWhenDBIsNotWorking() {
-        when(userUseCase.createUser(any(CreateUserCommand.class)))
+        when(authApplicationService.createUser(any(CreateUserCommand.class)))
                         .thenReturn(Mono.error(new RuntimeException("DB is not working")));
 
         webTestClient.post()
-                .uri("/api/auth")
+                .uri(API_USER)
                 .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(new CreateUserRequest("doe@gmail.com", "123"))
+                .bodyValue(new CreateUserRequest("doe@gmail.com", "123", 1L))
                 .exchange()
                 .expectStatus().is5xxServerError()
                 .expectBody(ErrorResponse.class)

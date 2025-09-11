@@ -1,0 +1,23 @@
+meta {
+  name: CreateUserAdmin
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:9080/api/v1/user
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb2JpbkBjcmVkaXQuY29tIiwicm9sZXMiOlt7ImF1dGhvcml0eSI6IkNVU1RPTUVSIn1dLCJpYXQiOjE3NTcxOTQ0MzcsImV4cCI6MTc1NzE5ODAzN30.tmVKILN4LWUKR43jvupr5l-LTPaCfdppj33r74G7uf0
+}
+
+body:json {
+  {
+    "username": "test@credit.com",
+    "password": "123",
+    "roleId": 1
+  }
+}
