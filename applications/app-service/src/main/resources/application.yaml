@@ -11,17 +11,6 @@ spring:
       path: "/h2"
   profiles:
     include: null
-  # Configuración JDBC (para Liquibase)
-  datasource:
-    url: jdbc:postgresql://localhost:5432/credit_user_db
-    username: credit_user
-    password: credit_pass
-    driver-class-name: org.postgresql.Driver
-
-  liquibase:
-    enabled: true
-    change-log: classpath:db/changelog/db.changelog-master.yaml
-
 
 management:
   endpoints:
