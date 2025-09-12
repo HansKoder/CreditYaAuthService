@@ -40,7 +40,7 @@ adapters:
     database: "${POSTGRES_DB:credit_auth_db}"
     schema: "public"
     username: "${POSTGRES_USER:auth_user}"
-    password: "${POSTGRES_USER:auth_pass}"
+    password: "${POSTGRES_PASSWORD:auth_pass}"
 
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
