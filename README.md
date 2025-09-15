@@ -43,5 +43,10 @@ This service is built following **Clean Architecture** principles to ensure test
 
 ### Prerequisites
 - JDK 21+
-- Docker (optional, for containerized environment)
 
+
+### Create new image
+```cmd
+chmod +x build-image.sh
+./build-image.sh
+```
