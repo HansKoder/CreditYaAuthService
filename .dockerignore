@@ -1,0 +1,34 @@
+# Archivos de control de versiones
+.git
+.gitignore
+
+# Archivos de IDE
+.idea
+.vscode
+*.iml
+*.ipr
+*.iws
+
+# Builds locales de Gradle/Maven
+**/build/
+**/out/
+**/target/
+
+# Logs
+*.log
+
+# Archivos temporales del SO
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Resultados de pruebas locales
+test-output/
+reports/
+
+# Binarios generados manualmente
+*.jar
+*.war
+*.ear

@@ -22,6 +22,7 @@ public class UserMapperTest {
                 .username("doe@gmail.com")
                 .password("1234")
                 .lock(Boolean.FALSE)
+                .roleId(1L)
                 .retry(3)
                 .build();
 
@@ -44,6 +45,7 @@ public class UserMapperTest {
                 .userName("doe@gmail.com")
                 .password("1234")
                 .retry(3)
+                .roleId(1L)
                 .lock(Boolean.FALSE)
                 .build();
 
@@ -61,6 +63,7 @@ public class UserMapperTest {
                 .userName("doe@gmail.com")
                 .password("1234")
                 .lock(Boolean.TRUE)
+                .roleId(1L)
                 .retry(3)
                 .build();
 

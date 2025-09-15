@@ -41,8 +41,6 @@ public class User extends AggregateRoot<UserId> {
 
     public void checkCreationUser() {
         checkWithoutId();
-        // checkIsLocked();
-
     }
 
     public void checkIsLocked () {
