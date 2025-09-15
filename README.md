@@ -48,5 +48,5 @@ This service is built following **Clean Architecture** principles to ensure test
 ### Create new image
 ```cmd
 chmod +x build-image.sh
-./build-image.sh
+./setup.sh
 ```

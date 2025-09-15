@@ -21,8 +21,13 @@ RUN ./gradlew :app-service:clean :app-service:build -x test
 
 
 # ---------- Stage 2: Runtime (Distroless) ----------
-FROM gcr.io/distroless/java21-debian12:nonroot
+# FROM gcr.io/distroless/java21-debian12:nonroot AS runtime
+# FROM eclipse-temurin:21-jre-jammy AS runtime
+FROM eclipse-temurin:21-jre-alpine AS runtime
 WORKDIR /app
+
+# Create user no-root (alpine, jammy)
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 
 # Copy jar from builder
 COPY --from=builder /workspace/applications/app-service/build/libs/*.jar app.jar
@@ -35,6 +40,8 @@ ENV JAVA_TOOL_OPTIONS="\
   -XX:+ExitOnOutOfMemoryError \
 "
 
-EXPOSE 9082
-# Distroless nonroot ya corre con un usuario no root
+# use user no-root (alpine, jammy)
+USER appuser
+
+EXPOSE 9080
 ENTRYPOINT ["java","-jar","/app/app.jar"]
