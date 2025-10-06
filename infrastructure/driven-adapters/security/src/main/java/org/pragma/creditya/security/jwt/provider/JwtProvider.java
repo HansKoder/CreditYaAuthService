@@ -25,6 +25,10 @@ public class JwtProvider {
     @Value("${jwt.expiration}")
     private Integer EXPIRATION;
 
+    private Integer EXPIRATION_MACHINE = 1000;
+
+
+
     private SecretKey KEY;
 
     @PostConstruct
@@ -44,6 +48,19 @@ public class JwtProvider {
                 .claim("roles", userDetails.getAuthorities())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .signWith(KEY, Jwts.SIG.HS256)
+                .compact();
+    }
+
+    public String generateMachineToken(String clientId) {
+        if (Objects.isNull(clientId))
+            throw new SecurityInfraException("[infra.security.jwt] ClientId must be mandatory");
+
+        return Jwts.builder()
+                .subject(clientId)
+                .claim("scope", "INTERNAL_COMMUNICATION")
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_MACHINE))
                 .signWith(KEY, Jwts.SIG.HS256)
                 .compact();
     }

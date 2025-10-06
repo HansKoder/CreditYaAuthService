@@ -3,6 +3,7 @@ package org.pragma.creditya.api;
 import lombok.RequiredArgsConstructor;
 import org.pragma.creditya.api.dto.request.CreateUserRequest;
 import org.pragma.creditya.api.dto.request.LoginRequest;
+import org.pragma.creditya.api.dto.request.MachineRequest;
 import org.pragma.creditya.api.mapper.UserRestMapper;
 import org.pragma.creditya.usecase.IAuthApplicationUseCase;
 import org.slf4j.Logger;
@@ -37,6 +38,17 @@ public class AuthHandler {
                 .flatMap(token -> ServerResponse.status(HttpStatus.OK).header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                         .build())
                 .doOnSuccess(e -> logger.info("[infra.reactive-web] (login) was successful"));
+    }
+
+    public Mono<ServerResponse> authenticationMachine(ServerRequest serverRequest) {
+        logger.info("[infra.reactive-web] (authentication-machine-01) init");
+        return serverRequest.bodyToMono(MachineRequest.class)
+                .doOnSuccess(response -> logger.info("[infra.reactive-web] (authentication-machine-02) make request authentication machine payload=[ clientId:{} ]", response.clientId()))
+                .map(UserRestMapper::toCommand)
+                .flatMap(authApplicationService::authenticationMachine)
+                .flatMap(token -> ServerResponse.status(HttpStatus.OK).header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .build())
+                .doOnSuccess(e -> logger.info("[infra.reactive-web] (authentication-machine) was successful"));
     }
 
 }

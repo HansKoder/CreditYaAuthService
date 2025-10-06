@@ -8,4 +8,5 @@ import java.util.List;
 public interface TokenProvider {
     Mono<String> generateToken (User user);
     Mono<Boolean> validateToken (String token);
+    Mono<String> generateMachineToken (String clientId);
 }

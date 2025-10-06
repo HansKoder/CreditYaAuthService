@@ -2,10 +2,13 @@ package org.pragma.creditya.api.mapper;
 
 import org.pragma.creditya.api.dto.request.CreateUserRequest;
 import org.pragma.creditya.api.dto.request.LoginRequest;
+import org.pragma.creditya.api.dto.request.MachineRequest;
 import org.pragma.creditya.api.dto.response.GetUserResponse;
 import org.pragma.creditya.model.user.User;
+import org.pragma.creditya.usecase.machine.command.AuthenticationMachineCommand;
 import org.pragma.creditya.usecase.user.command.CreateUserCommand;
 import org.pragma.creditya.usecase.user.command.LoginCommand;
+import org.pragma.creditya.usecase.user.ports.in.MachineRepository;
 
 public class UserRestMapper {
 
@@ -28,4 +31,7 @@ public class UserRestMapper {
         return new LoginCommand(request.username(), request.password());
     }
 
+    public static AuthenticationMachineCommand toCommand (MachineRequest request) {
+        return new AuthenticationMachineCommand(request.clientId(), request.clientSecret());
+    }
 }
