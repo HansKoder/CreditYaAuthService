@@ -23,4 +23,9 @@ public class TokenProviderImpl implements TokenProvider {
     public Mono<Boolean> validateToken(String token) {
         return Mono.fromCallable(() -> jwtProvider.validate(token));
     }
+
+    @Override
+    public Mono<String> generateMachineToken(String clientId) {
+        return Mono.fromCallable(() -> jwtProvider.generateMachineToken(clientId));
+    }
 }

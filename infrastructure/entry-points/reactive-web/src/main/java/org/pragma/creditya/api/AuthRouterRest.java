@@ -2,6 +2,7 @@ package org.pragma.creditya.api;
 
 import org.pragma.creditya.api.dto.response.ErrorResponse;
 import org.pragma.creditya.infracommon.exception.InfrastructureException;
+import org.pragma.creditya.model.shared.exception.UnAuthorizeDomainException;
 import org.pragma.creditya.model.user.exception.UserDomainException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,8 @@ public class AuthRouterRest {
                 .filter(domainErrorMapper())
                 .filter(infraErrorHandler())
                 .filter(unexpectedErrorHandler())
-                .andRoute(POST("/api/v1/login"), handler::login);
+                .andRoute(POST("/api/v1/login"), handler::login)
+                .andRoute(POST("/api/v1/login/machine"), handler::authenticationMachine);
     }
 
     private HandlerFilterFunction<ServerResponse, ServerResponse> domainErrorMapper() {
@@ -63,6 +65,16 @@ public class AuthRouterRest {
                                         .bodyValue(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage()))
                         ).log()
                         .doOnSuccess(e -> LOGGER.info("[infra.web-reactive] exceptions unexpected -> send error, status response. "));
+    }
+
+    private HandlerFilterFunction<ServerResponse, ServerResponse> unauthorizedErrorHandler () {
+        return (request, next) ->
+                next.handle(request)
+                        .onErrorResume(UnAuthorizeDomainException.class, ex ->
+                                ServerResponse.status(HttpStatus.UNAUTHORIZED).contentType(MediaType.APPLICATION_JSON)
+                                        .bodyValue(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage()))
+                        ).log()
+                        .doOnSuccess(e -> LOGGER.info("[infra.web-reactive] exceptions unauthorized -> send error, status response. "));
     }
 
 }

@@ -3,6 +3,8 @@ package org.pragma.creditya.usecase;
 import lombok.RequiredArgsConstructor;
 import org.pragma.creditya.model.role.Role;
 import org.pragma.creditya.model.user.User;
+import org.pragma.creditya.usecase.machine.IMachineUseCase;
+import org.pragma.creditya.usecase.machine.command.AuthenticationMachineCommand;
 import org.pragma.creditya.usecase.role.IRoleUseCase;
 import org.pragma.creditya.usecase.user.command.CreateUserCommand;
 import org.pragma.creditya.usecase.user.command.LoginCommand;
@@ -17,6 +19,7 @@ public class AuthApplicationUseCase implements IAuthApplicationUseCase {
     private final IUserUseCase userUseCase;
     private final IRoleUseCase roleUseCase;
     private final ILoginUseCase loginUseCase;
+    private final IMachineUseCase machineUseCase;
 
     @Override
     public Mono<User> createUser(CreateUserCommand command) {
@@ -38,5 +41,10 @@ public class AuthApplicationUseCase implements IAuthApplicationUseCase {
     @Override
     public Mono<String> login(LoginCommand command) {
         return loginUseCase.handler(command);
+    }
+
+    @Override
+    public Mono<String> authenticationMachine(AuthenticationMachineCommand command) {
+        return machineUseCase.authentication(command);
     }
 }

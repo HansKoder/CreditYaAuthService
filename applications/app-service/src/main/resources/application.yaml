@@ -12,6 +12,11 @@ spring:
   profiles:
     include: null
 
+machine:
+  client:
+    id: credit-ya
+    secret: s3cr3t-123
+
 management:
   endpoints:
     web:

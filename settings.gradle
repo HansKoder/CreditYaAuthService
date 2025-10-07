@@ -28,3 +28,5 @@ include ':infra-common'
 project(':infra-common').projectDir = file('./infrastructure/helpers/infra-common')
 include ':security'
 project(':security').projectDir = file('./infrastructure/driven-adapters/security')
+include ':machine'
+project(':machine').projectDir = file('./infrastructure/driven-adapters/machine')

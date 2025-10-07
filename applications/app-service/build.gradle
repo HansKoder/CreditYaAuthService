@@ -1,6 +1,7 @@
 apply plugin: 'org.springframework.boot'
 
 dependencies {
+	implementation project(':machine')
 	implementation project(':security')
 	implementation project(':infra-common')
 	implementation project(':reactive-web')

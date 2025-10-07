@@ -46,6 +46,7 @@ public class SecurityConfig {
                         .pathMatchers("/api/v1/user")
                         // .hasAnyRole("ADMIN", "ADVISOR")
                         .hasAnyAuthority("ADMIN", "ADVISOR")
+                        .pathMatchers("/api/v1/login/machine").permitAll()
                         .anyExchange().authenticated())
                 .addFilterAfter(jwtFilter, SecurityWebFiltersOrder.FIRST)
                 .securityContextRepository(securityContextRepository)

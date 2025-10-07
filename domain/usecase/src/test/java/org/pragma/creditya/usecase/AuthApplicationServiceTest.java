@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.pragma.creditya.model.role.Role;
 import org.pragma.creditya.model.user.User;
+import org.pragma.creditya.usecase.machine.IMachineUseCase;
 import org.pragma.creditya.usecase.role.IRoleUseCase;
 import org.pragma.creditya.usecase.user.command.CreateUserCommand;
 import org.pragma.creditya.usecase.user.command.LoginCommand;
@@ -25,6 +26,9 @@ public class AuthApplicationServiceTest {
 
     @MockitoBean
     private ILoginUseCase loginUseCase;
+
+    @MockitoBean
+    private IMachineUseCase machineUseCase;
 
     @InjectMocks
     private AuthApplicationUseCase authApplicationService;
@@ -48,8 +52,9 @@ public class AuthApplicationServiceTest {
         userUseCase = Mockito.mock(IUserUseCase.class);
         roleUseCase = Mockito.mock(IRoleUseCase.class);
         loginUseCase = Mockito.mock(ILoginUseCase.class);
+        machineUseCase = Mockito.mock(IMachineUseCase.class);
 
-        authApplicationService = new AuthApplicationUseCase(userUseCase, roleUseCase, loginUseCase);
+        authApplicationService = new AuthApplicationUseCase(userUseCase, roleUseCase, loginUseCase,machineUseCase);
     }
 
     @Test
