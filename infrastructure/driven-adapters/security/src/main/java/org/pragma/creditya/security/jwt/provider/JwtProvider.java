@@ -58,7 +58,7 @@ public class JwtProvider {
 
         return Jwts.builder()
                 .subject(clientId)
-                .claim("scope", "INTERNAL_COMMUNICATION")
+                .claim("scope", "machine-to-machine")
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + EXPIRATION_MACHINE))
                 .signWith(KEY, Jwts.SIG.HS256)
