@@ -25,6 +25,9 @@ dependencies {
     testImplementation 'org.testcontainers:postgresql'
     testImplementation 'org.testcontainers:r2dbc'
 
+    // Env vars
+    implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+    testImplementation 'me.paulschwarz:spring-v:4.0.0'
 }
 
 tasks.register('explodedJar', Copy) {

@@ -14,8 +14,8 @@ spring:
 
 machine:
   client:
-    id: credit-ya
-    secret: s3cr3t-123
+    id: "${AUTH_MACHINE_CLIENT_ID}"
+    secret: "${AUTH_MACHINE_CLIENT_PASSWORD}"
 
 management:
   endpoints:
@@ -29,16 +29,16 @@ management:
 
 adapters:
   r2dbc:
-    host: "${POSTGRES_HOST:localhost}"
-    port: "${POSTGRES_PORT:5432}"
-    database: "${POSTGRES_DB:credit_auth_db}"
+    host: "${POSTGRES_HOST}"
+    port: "${POSTGRES_PORT}"
+    database: "${POSTGRES_DB}"
     schema: "public"
-    username: "${POSTGRES_USER:auth_user}"
-    password: "${POSTGRES_PASSWORD:auth_pass}"
+    username: "${POSTGRES_USER}"
+    password: "${POSTGRES_PASSWORD}"
 
 cors:
-  allowed-origins: "http://localhost:4200,http://localhost:8080"
+  allowed-origins: "${CORS_ORIGIN_ALLOWED}"
 
 jwt:
-  secret: ${SECRET_KEY:uO8lC2VhP3nZ6kF9Q1tWjR7yX5aT2sVb0mGhN8oJzK4cE6rLwBqD3pUyHfMxZaSd}
-  expiration: "${EXPIRATION:3600000}"
+  secret: "${JWT_SECRET_KEY}"
+  expiration: "${JWT_EXPIRATION}"
